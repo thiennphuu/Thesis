@@ -1,0 +1,91 @@
+% ============================================================
+%  BIBLIOGRAPHY -- DANH MUC TAI LIEU THAM KHAO
+%
+%  HUONG DAN QUAN LY TAI LIEU THAM KHAO:
+%
+%  CONG CU KHUYEN DUNG:
+%  - Zotero (mien phi, co plugin cho Firefox/Chrome)
+%  - Mendeley (mien phi)
+%  - Google Scholar: click "Cite" -> BibTeX -> copy vao day
+%
+%  CACH THEM TAI LIEU:
+%  (1) Tim bai bao tren Google Scholar / Semantic Scholar
+%  (2) Click "Cite" -> chon "BibTeX"
+%  (3) Copy va paste vao file nay
+%  (4) Doi ten key thanh ten ngan, de nho:
+%      article{lewis2020rag, ...} -> trich dan bang \cite{lewis2020rag}
+%
+%  QUY TAC DAT TEN KEY:
+%  [tacgia][nam][tu_khoa_chinh]
+%  Vi du: smith2023attention, nguyen2021bert, jones2022survey
+%
+%  LOAI ENTRY THUONG DUNG:
+%  article   -- Journal paper
+%  inproceedings -- Conference paper (EMNLP, ICLR, NeurIPS, v.v.)
+%  book      -- Sach giao khoa
+%  misc      -- Preprint (arXiv), website, technical report
+%  phdthesis -- PhD thesis
+%
+%  LUU Y:
+%  - Phai trich dan TRONG VAN BAN bang \cite{key} 
+%    Moi nguon trong bibliography.bib phai co it nhat 1 
+%    lan \cite{} tuong ung trong cac chapter
+%  - Kiem tra lai spelling cua ten tac gia
+%  - Voi cac tu viet hoa trong title journal: dung {} 
+%    Vi du: title = {A Survey of {BERT} Applications}
+%  - Undergrad thesis: khoang 15-30 nguon la hop le
+% ============================================================
+
+
+% ============================================================
+%  VI DU CAC ENTRY -- THAY THE BANG TÀI LIEU CUA BAN
+% ============================================================
+
+% --- Journal Articles ---
+@article{example_journal_2023,
+  author  = {Smith, John and Doe, Jane},
+  title   = {A Survey of [Your Topic Here]},
+  journal = {IEEE Transactions on [Field]},
+  volume  = {45},
+  number  = {3},
+  pages   = {123--145},
+  year    = {2023},
+}
+
+% --- Conference Papers ---
+@inproceedings{example_conf_2022,
+  author    = {Author, First and Author, Second},
+  title     = {[Paper Title]: [Subtitle]},
+  booktitle = {Proceedings of the [Conference Name] (ACRONYM)},
+  pages     = {234--245},
+  year      = {2022},
+}
+
+% --- ArXiv / Technical Reports ---
+@misc{example_arxiv_2024,
+  author = {Author, First and Author, Second},
+  title  = {[Paper Title]},
+  year   = {2024},
+  note   = {Preprint, arXiv:XXXX.XXXXX},
+}
+
+% --- Books ---
+@book{example_book_2023,
+  author    = {Author, First and Author, Second},
+  title     = {[Book Title]},
+  edition   = {3rd},
+  publisher = {[Publisher Name]},
+  year      = {2023},
+}
+
+% --- Websites / Software ---
+@misc{example_web_2024,
+  author       = {{Organization Name}},
+  title        = {[Tool / Framework Name]},
+  year         = {2024},
+  howpublished = {\url{https://example.com}},
+  note         = {Accessed: June 2025},
+}
+
+% *** THEM TAI LIEU THUC SU CUA BAN TU DAY TRLXUONG ***
+

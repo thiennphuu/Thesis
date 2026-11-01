@@ -1,0 +1,316 @@
+% ============================================================
+%  CHAPTER 4: IMPLEMENTATION & EXPERIMENTAL SETUP
+% ============================================================
+%
+%  VAI TRO CUA CHAPTER 4:
+%  Chapter 4 la cau noi giua thiet ke (Chapter 3) va ket qua
+%  (Chapter 5). Co hai phan chinh:
+%
+%  PHAN A: IMPLEMENTATION
+%    - Ban da xay dung he thong nhu the nao?
+%    - Cong cu, ngon ngu, thu vien nao duoc dung?
+%    - Cau truc code / he thong?
+%    - Nhung quyet dinh ky thuat quan trong trong qua trinh build?
+%
+%  PHAN B: EXPERIMENTAL SETUP / EVALUATION FRAMEWORK
+%    - Ban danh gia he thong nhu the nao?
+%    - Du lieu thu nghiem (test set) la gi?
+%    - Cac metric do luong la gi?
+%    - Baseline va cac he thong so sanh la gi?
+%
+%  TAI SAO PHAN B QUAN TRONG:
+%  Neu ban khong mo ta ro evaluation setup, ket qua o Chapter 5
+%  se khong co gia tri. Nguoi doc can biet:
+%    "Chính xác ban do cai gi, tren gi, bang cach nao?"
+%  truoc khi ho co the danh gia ket qua.
+%
+%  LOI SAI PHO BIEN:
+%  1. Bo qua phan Implementation, nhay thang sang ket qua.
+%     -> Nguoi doc khong the reproduce (tai tao) cong trinh.
+%  2. Mo ta evaluation qua so sai:
+%     "We tested the system and got 80% accuracy."
+%     -> Thieu: test set nao? 80 cau hay 800 cau? Ai tao test set?
+%  3. Khong neu baseline (so sanh voi gi de biet 80% la tot hay khong?)
+% ============================================================
+
+\chapter{Implementation and Experimental Setup}
+\label{chap:implementation}
+
+% ============================================================
+%  OPENING PARAGRAPH
+%  -----------------------------------------------------------
+%  Neu ro cau truc chapter: phan A (implementation) va
+%  phan B (experimental setup / evaluation).
+%  Vi du:
+%  "This chapter is divided into two parts. Part I (Sections
+%   4.1-4.3) describes the technical implementation of the
+%   system designed in Chapter 3. Part II (Sections 4.4-4.6)
+%   defines the evaluation framework, including the test
+%   benchmark, evaluation metrics, and comparison baselines."
+% ============================================================
+
+% *** VIET OPENING PARAGRAPH TAI DAY ***
+[Write the opening paragraph that outlines Part I
+(implementation) and Part II (evaluation setup).]
+
+
+% ============================================================
+%  PART I: IMPLEMENTATION
+% ============================================================
+
+% ============================================================
+%  SECTION 4.1: TECHNOLOGY STACK
+%  -----------------------------------------------------------
+%  Mo ta cac cong cu, ngon ngu, thu vien chinh duoc su dung.
+%  Su dung TABLE de trinh bay ro rang.
+%
+%  Cach viet tot:
+%    Khong chi liet ke ten cong cu, ma giai thich tai sao
+%    chon cong cu do (thay vi cac lua chon khac).
+%    Vi du:
+%    "Flask was chosen for the web interface because it
+%     requires minimal boilerplate and the API surface is
+%     small. A heavier framework such as Django was not
+%     warranted given the single-endpoint design."
+% ============================================================
+
+\section{Technology Stack}
+\label{sec:tech_stack}
+
+% *** VIET TECHNOLOGY STACK TAI DAY ***
+[Describe the main tools and libraries used. Consider
+a table for clarity:]
+
+\begin{table}[H]
+  \centering
+  \caption{Technology stack used in the implementation}
+  \label{tab:tech}
+  \begin{tabular}{lll}
+    \toprule
+    \textbf{Component} & \textbf{Technology} & \textbf{Version / Notes}\\
+    \midrule
+    Programming Language & {[e.g., Python]} & {[e.g., 3.11]}\\
+    Web Framework       & {[e.g., Flask]}  & {[e.g., 3.0.2]}\\
+    Database            & {[e.g., SQLite / PostgreSQL]} & {[version]}\\
+    ML Library          & {[e.g., PyTorch / HuggingFace]} & {[version]}\\
+    {[Other component]}   & {[Tool name]}    & {[version]}\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+[Follow the table with 1-2 paragraphs explaining the key
+technology choices. Why these tools and not alternatives?]
+
+
+% ============================================================
+%  SECTION 4.2: SYSTEM ARCHITECTURE (IMPLEMENTATION VIEW)
+%  -----------------------------------------------------------
+%  Khac voi Figure 3.1 (kien truc thiet ke tong the),
+%  phan nay mo ta cau truc code / module thuc te.
+%
+%  Co the bao gom:
+%  - So do cac module / files chinh
+%  - Cach cac module goi nhau
+%  - Screenshot cua giao dien (neu co)
+%  - Cau truc thu muc du an
+%
+%  LUU Y VE SCREENSHOT:
+%  - Chi dua screenshot vao neu no cho thay dieu gi co y nghia
+%  - Caption phai mo ta ro ca screenshot (chi tiet chuc nang
+%    ang hien thi, khong chi "Figure X shows the interface")
+%  - Screenshot phai co do phan giai tot (khong mo, khong be)
+% ============================================================
+
+\section{System Implementation}
+\label{sec:sys_impl}
+
+% *** VIET IMPLEMENTATION CHI TIET TAI DAY ***
+[Describe how the system was actually built. Cover:
+(1) Module/file structure
+(2) Key implementation decisions (things that surprised you,
+    problems you solved, shortcuts you took and why)
+(3) Screenshot or diagram of the working system if applicable]
+
+\begin{figure}[H]
+  \centering
+  \IfFileExists{images/screenshot}{%
+    \includegraphics[width=0.9\textwidth]{images/screenshot}%
+  }{%
+    \fbox{\parbox[c][5cm][c]{0.85\textwidth}{\centering Screenshot not added yet}}%
+  }
+  \caption{[Screenshot caption: describe what functionality
+    is shown. Example: "The web interface showing a bilingual
+    query and the system's response with metadata tags
+    indicating the detected intent and retrieval path."]}
+  \label{fig:screenshot}
+\end{figure}
+
+
+% ============================================================
+%  SECTION 4.3: IMPLEMENTATION CHALLENGES (optional)
+%  -----------------------------------------------------------
+%  Phan nay la tuy chon nhung rat duoc danh gia cao.
+%  Mo ta nhung van de thuc te ban gap trong qua trinh build
+%  va cach ban giai quyet chung.
+%
+%  Nhung loai challenge hay gap:
+%  - Bugs kho debug (va ban phat hien nhu the nao)
+%  - Quyet dinh thiet ke phai thay doi giua chung
+%  - Chenh lech giua thiet ke ban dau va thiet ke cuoi
+%  - Van de hieu nang (performance) va cach giai quyet
+%
+%  Cach viet:
+%  "An early version of the system duplicated retrieval
+%   logic across the pipeline and the evaluation scripts.
+%   This caused a subtle bug: updates to retrieval were not
+%   reflected in evaluation runs. The fix was to route all
+%   queries through a single rag_pipeline.py module,
+%   eliminating the duplication."
+%
+%  Day khong phai la phan "ke kho khan", ma la phan the hien
+%  ban hieu he thong cua minh sau nhu the nao va ban tu duy
+%  ky su ra sao.
+% ============================================================
+
+\section{Implementation Challenges}
+
+% *** VIET CHALLENGES TAI DAY (hoac xoa section neu khong can) ***
+[Describe 2-3 notable implementation challenges and how
+you resolved them. Be specific -- what broke, how did you
+detect it, what was the fix?]
+
+
+% ============================================================
+%  PART II: EVALUATION FRAMEWORK
+% ============================================================
+
+% ============================================================
+%  SECTION 4.4: TEST SET CONSTRUCTION
+%  -----------------------------------------------------------
+%  Mo ta TEST SET -- cuc ky quan trong.
+%  Nguoi doc phai biet CHINH XAC ban danh gia tren gi.
+%
+%  Phai tra loi cac cau hoi:
+%  - Test set co bao nhieu instances?
+%  - Du lieu test den tu dau? (collect tu dau, ai tao, khi nao)
+%  - Phan phoi giua cac loai (class distribution)?
+%  - Lam the nao de dam bao test set chat luong / khong bi bias?
+%  - Co overlap voi training data khong? (neu dung ML)
+%
+%  Vi du viet tot:
+%  "The test benchmark consists of 120 question-answer pairs
+%   drawn equally from four intent categories (30 per
+%   category). Questions were manually authored by the
+%   thesis author and verified against the official course
+%   catalog to ensure factual accuracy. No question was
+%   taken from materials used to build the knowledge base,
+%   ensuring no overlap between the evaluation set and
+%   indexed content."
+% ============================================================
+
+\section{Test Set Construction}
+\label{sec:testset}
+
+% *** MO TA TEST SET CUA BAN TAI DAY ***
+[Describe your test set in detail. Answer:
+(1) Size: how many test cases?
+(2) Source: where did the test data come from?
+(3) Distribution: how are cases distributed across categories?
+(4) Quality control: how did you verify correctness?
+(5) Any potential biases or limitations in the test set?]
+
+% Consider a table showing test set distribution:
+\begin{table}[H]
+  \centering
+  \caption{Test set composition by category}
+  \label{tab:testset}
+  \begin{tabular}{lrr}
+    \toprule
+    \textbf{Category} & \textbf{Count} & \textbf{Percentage}\\
+    \midrule
+    {[Category 1]} & {[N]}  & {[XX\%]}\\
+    {[Category 2]} & {[N]}  & {[XX\%]}\\
+    {[Category 3]} & {[N]}  & {[XX\%]}\\
+    \midrule
+    \textbf{Total} & \textbf{{[N]}} & \textbf{100\%}\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+
+% ============================================================
+%  SECTION 4.5: EVALUATION METRICS
+%  -----------------------------------------------------------
+%  Mo ta CAC METRIC ban dung de do luong ket qua.
+%
+%  Cach viet tot:
+%  (1) Dinh nghia tung metric bang cong thuc (neu co)
+%  (2) Giai thich y nghia thuc te cua metric
+%  (3) Neu gioi han cua metric (vi du: accuracy khong phan biet
+%      cac loai loi, nen can them precision/recall)
+%
+%  LUU Y: Khong chi neu ten metric roi bo qua.
+%  Nguoi doc can hieu:
+%    - Metric nay do cai gi?
+%    - Gia tri cao la tot hay thap la tot?
+%    - Co diem yeu gi khong?
+%
+%  Vi du viet tot:
+%  "We adopt exact-match accuracy as the primary metric:
+%   a response is counted as correct if and only if it
+%   contains the expected answer without factual errors,
+%   as judged by manual inspection. This conservative
+%   metric avoids the ambiguity of partial-credit scoring
+%   but may penalize paraphrases that are technically
+%   correct. Overall accuracy is reported alongside
+%   per-category breakdown to identify where the system
+%   fails."
+% ============================================================
+
+\section{Evaluation Metrics}
+\label{sec:metrics}
+
+% *** MO TA METRICS CUA BAN TAI DAY ***
+[Define each metric you use. Include the formula if the
+metric is not standard. Explain what it measures and
+why you chose it. Note any limitations.]
+
+% Example metric formula:
+% \begin{equation}
+%   \text{Accuracy} = \frac{\text{Number of Correct Responses}}
+%                          {\text{Total Test Cases}}
+% \end{equation}
+
+
+% ============================================================
+%  SECTION 4.6: BASELINES AND COMPARISON SYSTEMS
+%  -----------------------------------------------------------
+%  Mo ta ban so sanh he thong cua minh voi gi.
+%
+%  Loai baseline hay dung:
+%  (a) Ablation baseline: version cua he thong ban khong co
+%      mot component nao do (vi du: khong co intent routing)
+%  (b) Alternative system: he thong khac giai quyet cung bai toan
+%  (c) Model comparison: cung mot pipeline, doi LLM
+%
+%  Phai giai thich tai sao ban chon nhung baseline nay.
+%
+%  Vi du:
+%  "To isolate the contribution of intent routing, we
+%   compare the full system against an ablation that removes
+%   the intent classifier and routes all queries through
+%   semantic retrieval only. This ablation tests whether
+%   the routing logic produces a measurable accuracy gain
+%   on structured queries."
+% ============================================================
+
+\section{Baselines and Comparison Systems}
+\label{sec:baselines}
+
+% *** MO TA BASELINES CUA BAN TAI DAY ***
+[Describe what you compare against and why.
+For each baseline, explain:
+(1) What it is
+(2) How it differs from your full system
+(3) What comparison with it tells you]
+

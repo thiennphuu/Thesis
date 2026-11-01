@@ -1,0 +1,298 @@
+% ============================================================
+%  CHAPTER 3: METHODOLOGY / SYSTEM DESIGN
+% ============================================================
+%
+%  VAI TRO CUA CHAPTER 3:
+%  Day la TRAI TIM cua luan van ky thuat. Ban mo ta THIET KE
+%  cua he thong / phuong phap: tai sao chon kien truc nay,
+%  tai sao thiet ke tung component nhu vay.
+%
+%  PHAN BIET "METHODOLOGY" VA "IMPLEMENTATION":
+%    METHODOLOGY (Chapter 3) = THIET KE + LY THUYET
+%      "What the system does and why it was designed that way."
+%      Tap trung vao kien truc, quyet dinh thiet ke, cac cong
+%      thuc va ly thuyet dung lam nen tang.
+%
+%    IMPLEMENTATION (Chapter 4) = HIEN THUC HOA
+%      "How the system was built in practice."
+%      Tap trung vao cong cu, thu vien, code, cau hinh cu the.
+%
+%  VID DU PHAN BIET:
+%    Chapter 3: "The system uses cosine similarity to rank
+%                retrieved documents because it is invariant
+%                to vector magnitude, unlike Euclidean
+%                distance, making it more robust for comparing
+%                sentence embeddings of different lengths."
+%    Chapter 4: "Cosine similarity is computed using the
+%                Qdrant client library (v1.7.0) with
+%                HNSW indexing, configured at ef=128."
+%
+%  LOI SAI PHO BIEN:
+%  1. Viet Chapter 3 nhu huong dan cai dat (setup guide).
+%     Chapter 3 phai giai thich QUYET DINH, khong chi HANH DONG.
+%  2. Mo ta HET MOI THU ma khong giai thich tai sao.
+%     Moi component phai co ly do chon no.
+%  3. Quen khong co system overview / architecture figure.
+%     Phai co it nhat 1 hinh mo ta toan bo pipeline.
+% ============================================================
+
+\chapter{Methodology}
+\label{chap:methodology}
+
+% ============================================================
+%  OPENING PARAGRAPH (bat buoc)
+%  -----------------------------------------------------------
+%  Gioi thieu ngan gon cau truc cua chapter nay.
+%  Neu ro cac section chinh theo thu tu pipeline / thiet ke.
+%
+%  Vi du:
+%  "This chapter presents the design of the proposed [system].
+%   Section 3.1 provides a high-level overview of the
+%   system architecture. Sections 3.2 through 3.5 then
+%   describe each major component in the order they appear
+%   in the processing pipeline: [component 1], [component 2],
+%   [component 3], and [component 4].
+%   Section 3.6 explains the parameter selection rationale."
+%
+%  LUU Y: Thu tu cac section nen theo thu tu xu ly cua he thong.
+%  Dieu nay giup nguoi doc hieu luong du lieu di qua dau.
+% ============================================================
+
+% *** VIET OPENING PARAGRAPH TAI DAY ***
+[Write the opening paragraph that maps out this chapter.
+Follow the pipeline order -- input -> processing -> output.]
+
+
+% ============================================================
+%  SECTION 3.1: SYSTEM OVERVIEW
+%  -----------------------------------------------------------
+%  Day la section quan trong nhat trong Chapter 3.
+%  Nguoi doc can thay "buc tranh lon" truoc khi di vao chi tiet.
+%
+%  NOI DUNG BAT BUOC:
+%  (1) Mo ta tong the he thong lam gi
+%  (2) Liet ke cac component chinh
+%  (3) Mo ta luong xu ly (processing flow) tu dau den cuoi
+%  (4) FIGURE: So do kien truc he thong (architecture diagram)
+%
+%  HUONG DAN VE FIGURE KIEN TRUC:
+%  - Phai co it nhat 1 figure o Section 3.1
+%  - Figure phai hien thi: input -> cac component -> output
+%  - Ten cac component trong figure phai khop voi ten trong text
+%  - Figure caption phai mo ta du (ai khong doc text van hieu)
+%
+%  VI DU VIET SYSTEM OVERVIEW TOT:
+%  "The system operates as a pipeline with N stages.
+%   When a query arrives, it is first [step 1: preprocessed].
+%   [Step 2: Intent classification] then determines which
+%   retrieval path the query should follow. Depending on the
+%   classified intent, the query is routed to either
+%   [Path A] or [Path B]. The retrieved content is then
+%   passed to [generation component], which produces the
+%   final response. Figure~\ref{fig:arch} illustrates this
+%   flow."
+%
+%  MIEN DICH TU VAN DE THUC TE SANG KIEN TRUC:
+%    Van de: "Students ask prerequisite questions"
+%    -> Component: "Intent classifier labels query as
+%                   'prerequisite'"
+%    -> Action: "System queries SQL database"
+%    -> Output: "Templated answer returned"
+%  Lam ro khi nao dung rule-based, khi nao dung ML.
+% ============================================================
+
+\section{System Overview}
+\label{sec:overview}
+
+% *** VIET SYSTEM OVERVIEW TAI DAY ***
+[Describe the overall system in 2-4 paragraphs. Cover:
+(1) The problem the system solves at a high level
+(2) The main components (list them by name)
+(3) The processing flow from input to output
+(4) Reference the architecture figure below]
+
+\begin{figure}[H]
+  \centering
+  % CHEN HINH KIEN TRUC CUA BAN VAO DAY
+  % Doi file hinh thanh dang PNG hoac PDF, luu vao thu muc images/
+  \IfFileExists{images/architecture}{%
+    \includegraphics[width=0.95\textwidth]{images/architecture}%
+  }{%
+    \fbox{\parbox[c][5cm][c]{0.9\textwidth}{\centering Architecture figure not added yet}}%
+  }
+  \caption{[System architecture overview: describe the main
+    components and how data flows through them. A good caption
+    should be self-contained -- a reader who sees only this
+    figure and its caption should understand the overall flow.]}
+  \label{fig:arch}
+\end{figure}
+
+
+% ============================================================
+%  SECTION 3.2: [COMPONENT 1 -- e.g., Data / Knowledge Base]
+%  -----------------------------------------------------------
+%  Bat dau voi component dau tien trong pipeline.
+%  Thuong la du lieu / knowledge base / bieu dien du lieu.
+%
+%  CAC DIEU CAN CO TRONG MOI COMPONENT SECTION:
+%  (1) Mo ta component lam gi (1 doan)
+%  (2) Ly do chon thiet ke nay (1 doan)
+%      "We chose X over Y because..."
+%      "This design decision was motivated by..."
+%  (3) Chi tiet ky thuat (subsections neu phuc tap)
+%  (4) Figure hoac table neu giup hieu ro hon
+%
+%  CHO PHAN DATA/KNOWLEDGE BASE, NEN BAO GOM:
+%  - Nguon du lieu (data sources)
+%  - Kich thuoc va dac diem du lieu
+%  - Cach xu ly / clean / format du lieu
+%  - Bieu dien du lieu (representation): tai sao chon format nay
+% ============================================================
+
+\section{[Component 1: e.g., Knowledge Base Construction]}
+\label{sec:knowledge_base}
+
+% *** VIET NOI DUNG COMPONENT 1 TAI DAY ***
+
+[Paragraph 1: What does this component do and what problem
+does it solve?]
+
+[Paragraph 2: What are the data sources? Describe size,
+format, and characteristics.]
+
+[Paragraph 3: How did you process or structure the data?
+Why did you choose this representation?]
+
+% Chi them subsections neu component nay phuc tap
+% \subsection{Data Sources}
+% \subsection{Data Preprocessing}
+% \subsection{Document Representation}
+
+
+% ============================================================
+%  SECTION 3.3: [COMPONENT 2 -- e.g., Core Technical Method]
+%  -----------------------------------------------------------
+%  Day thuong la phan ky thuat chinh cua he thong.
+%  Can co CONG THUC TOAN HOC neu phuong phap co nen ly thuyet.
+%
+%  HUONG DAN VE CONG THUC:
+%  - Moi cong thuc can duoc danh so: \begin{equation}...\end{equation}
+%  - Giai thich tat ca ky hieu ngay sau cong thuc:
+%    "where $\mathbf{v}_q$ is the query vector, $k$ is..."
+%  - Giai thich TAI SAO dung cong thuc nay, khong chi la no la gi
+%
+%  Vi du viet cong thuc tot:
+%  "Similarity between query and document is computed as:
+%   \begin{equation}
+%     \text{sim}(\mathbf{v}_q, \mathbf{v}_d) = 
+%     \frac{\mathbf{v}_q \cdot \mathbf{v}_d}
+%          {\|\mathbf{v}_q\| \cdot \|\mathbf{v}_d\|}
+%   \end{equation}
+%   where $\mathbf{v}_q$ is the query embedding vector and
+%   $\mathbf{v}_d$ is the document embedding vector.
+%   Cosine similarity was chosen over Euclidean distance
+%   because it is invariant to vector magnitude, which
+%   matters when comparing sentence embeddings of varying
+%   lengths."
+% ============================================================
+
+\section{[Component 2: e.g., Retrieval / Core Method]}
+\label{sec:retrieval}
+
+% *** VIET NOI DUNG COMPONENT 2 TAI DAY ***
+
+[Paragraph 1: Describe what this component does in the
+overall pipeline.]
+
+[Paragraph 2: Describe the core technical mechanism.
+Include the key formula if applicable.]
+
+% Example formula -- replace with your own:
+\begin{equation}
+  \text{[formula name]} = \frac{[numerator]}{[denominator]}
+  \label{eq:main}
+\end{equation}
+
+where $[\text{symbol 1}]$ is [description], and
+$[\text{symbol 2}]$ is [description].
+
+[Paragraph 3: Justify your design choices. Why this
+approach and not an alternative?]
+
+
+% ============================================================
+%  SECTION 3.4: [COMPONENT 3]
+%  -----------------------------------------------------------
+%  Tiep tuc moi thanh phan trong pipeline.
+%  Lap lai cau truc: mo ta -> ly do chon -> chi tiet ky thuat
+% ============================================================
+
+\section{[Component 3: e.g., Classification / Routing]}
+\label{sec:classification}
+
+% *** VIET NOI DUNG COMPONENT 3 TAI DAY ***
+
+[Describe this component following the same pattern:
+(1) What it does, (2) Why this design, (3) Technical details]
+
+% Include a table if this component involves multiple cases:
+% Example: Intent categories and their handling paths
+\begin{table}[H]
+  \centering
+  \caption{[Table title -- describe what the table shows]}
+  \label{tab:component3}
+  \begin{tabular}{lp{5cm}p{4cm}}
+    \toprule
+    \textbf{{[Column 1]}} & \textbf{{[Column 2]}} & \textbf{{[Column 3]}}\\
+    \midrule
+    {[row 1, col 1]} & {[row 1, col 2]} & {[row 1, col 3]}\\
+    {[row 2, col 1]} & {[row 2, col 2]} & {[row 2, col 3]}\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+
+% ============================================================
+%  SECTION 3.5: [COMPONENT 4 -- e.g., Generation / Output]
+%  -----------------------------------------------------------
+%  Component cuoi cung trong pipeline: tao ra output.
+%  Can mo ta ro rang: khi nao dung rule-based template,
+%  khi nao dung language model / ML model.
+% ============================================================
+
+\section{[Component 4: e.g., Response Generation]}
+\label{sec:generation}
+
+% *** VIET NOI DUNG COMPONENT 4 TAI DAY ***
+
+[Describe the output generation component.
+Be explicit about: when is the output deterministic/templated
+vs. when does it use a learned model? Why?]
+
+
+% ============================================================
+%  SECTION 3.6: PARAMETER SELECTION (neu co)
+%  -----------------------------------------------------------
+%  Neu he thong co cac tham so quan trong (k, threshold,
+%  model size, etc.), giai thich tai sao ban chon gia tri do.
+%
+%  Cach viet tot:
+%  "The retrieval depth k=3 was determined empirically:
+%   k=1 was insufficient when the top result was marginally
+%   incorrect; k=5 and above diluted the context window.
+%   k=3 provided the best balance in preliminary runs."
+%
+%  Neu ban toi uu tham so bang grid search hoac ablation,
+%  tham chieu sang Chapter 4/5 noi ban bao cao ket qua.
+% ============================================================
+
+\section{Parameter Selection}
+\label{sec:params}
+
+% *** VIET PARAMETER SELECTION TAI DAY (hoac xoa section neu khong can) ***
+
+[Explain the key parameters in your system and how you
+selected their values. Was it empirical? Theoretical?
+Based on prior work? Be honest about what was tested
+vs. what was set by convention.]
+

@@ -1,0 +1,223 @@
+% ============================================================
+%  CHAPTER 2: RELATED WORK / LITERATURE REVIEW
+% ============================================================
+%
+%  VAI TRO CUA CHAPTER 2:
+%  Chapter 2 co hai nhiem vu song song:
+%    (a) Xay dung nen tang kien thuc cho nguoi doc (background)
+%    (b) Dinh vi luan van cua ban trong khong gian nghien cuu
+%        hien tai (related work)
+%
+%  Nhieu sinh vien nham lan hai dieu nay. Hay nho:
+%    BACKGROUND = "Day la kien thuc nen can hieu de doc luan van"
+%    RELATED WORK = "Day la nhung gi nguoi khac da lam, va tai
+%                    sao cong trinh cua minh khac / tot hon"
+%
+%  TU DUY CHUAN CHO CHAPTER 2:
+%  Ban khong viet bai tong quan Wikipedia. Ban dang xay dung
+%  mot ARGUMENT: "Cac cong trinh truoc da tien xa den diem X,
+%  nhung van con gap Y, do do cong trinh cua minh can thiet."
+%
+%  CAC LOI SAI PHO BIEN:
+%  1. "Paper dump": Liet ke nhieu paper ma khong giai thich
+%     lien quan den luan van cua ban the nao.
+%     -> SAI: "Smith et al. [5] proposed method X."
+%     -> DUNG: "Smith et al. [5] proposed X, which achieves
+%               high accuracy but requires [resource/condition]
+%               not available in our setting."
+%
+%  2. Khong co phan so sanh / gan ket voi thesis cua ban.
+%     Moi subsection nen ket thuc bang 1-2 cau noi:
+%     "In this work, we adopt / extend / depart from this
+%     approach because..."
+%
+%  3. Chi mo ta, khong phan tich. Phai chi ra diem manh /
+%     yeu cua tung huong tiep can.
+%
+%  BAO NHIEU TAI LIEU THAM KHAO?
+%  Undergrad thesis: 15-30 nguon la phu hop.
+%  Nen bao gom: journal articles, conference papers (EMNLP,
+%  ACL, ICLR, NeurIPS, AAAI, CVPR, etc.), va 1-2 textbook.
+%  Tranh chi trich dan website / blog.
+%
+%  CAM MOT CUM TU HAY DUNG KHI TONG QUAN:
+%    "[Author] et al.~\cite{key} introduced / proposed /
+%     demonstrated / showed that..."
+%    "A key limitation of [approach] is that it..."
+%    "Unlike [prior work], our system..."
+%    "Building on the work of [X], this thesis..."
+%    "To the best of our knowledge, no prior work has
+%     addressed [specific gap]."
+% ============================================================
+
+\chapter{Related Work}
+\label{chap:related}
+
+% ============================================================
+%  OPENING PARAGRAPH (bat buoc)
+%  -----------------------------------------------------------
+%  Doan dau chapter 2 can:
+%  (1) Giai thich tai sao ban chon cac topic nay de review
+%  (2) Mo ta ngan gon cac section se co trong chapter nay
+%
+%  Vi du:
+%  "Building [your system type] requires drawing on several
+%   intersecting research areas. Section 2.1 reviews
+%   [Topic A], which underpins [component 1].
+%   Section 2.2 covers [Topic B], with particular attention
+%   to [aspect relevant to your work].
+%   Section 2.3 examines [Topic C]. Each section closes
+%   with a note on how the reviewed work connects to the
+%   design choices in this thesis."
+% ============================================================
+
+% *** VIET OPENING PARAGRAPH TAI DAY ***
+[Write 1 paragraph explaining what topics you will cover
+and why these specific topics are relevant to your thesis.
+Each topic should correspond to a design decision or
+component in your system.]
+
+
+% ============================================================
+%  SECTION 2.1: [TOPIC A -- nen tang chinh]
+%  -----------------------------------------------------------
+%  Huong dan chung cho moi section:
+%
+%  BUOC 1: Mo ta van de / khai niem chinh (1 doan)
+%    - Day la gi? Tai sao quan trong?
+%    - Dung kien thuc nen, khong chi la trich dan
+%
+%  BUOC 2: Tong quan cac cong trinh chinh (2-4 doan)
+%    - Nhom cac paper theo huong tiep can, khong liet ke lan luot
+%    - Moi nhom: mo ta chung, neu diem manh, neu diem yeu
+%
+%  BUOC 3: Ket luan va gan ket (1 doan)
+%    - Cac cong trinh nay informd he thong cua ban the nao?
+%    - Ban tiep thu, mo rong, hay khac gi so voi cac huong nay?
+%
+%  GHI CHU VE CITATION:
+%  Dung natbib: \cite{key} cho (Author, Year)
+%               \citet{key} cho "Author (Year) showed..."
+%  Vi du:
+%    \citet{lewis2020} formally defined the RAG framework as...
+%    Recent surveys~\cite{gao2023survey} categorize RAG into...
+% ============================================================
+
+\section{[Topic A -- e.g., Retrieval-Augmented Generation]}
+
+% *** VIET NOI DUNG SECTION 2.1 TAI DAY ***
+
+[Paragraph 1: What is Topic A? Define the core concept in
+your own words -- not a dictionary definition, but a
+functional explanation tied to your use case.]
+
+[Paragraph 2: Describe the foundational/seminal work.
+Use \citet{} for the first mention of each paper.
+Example: "AuthorName (Year) introduced [method], showing
+that [result]. This established [what it proved/enabled]."]
+
+[Paragraph 3: Describe subsequent developments or variants.
+Group related papers. Note what each group of papers
+improved and what remains unresolved.]
+
+[Closing paragraph: Connect to your work.
+Example: "The present work adopts [specific technique from
+above] because [reason]. Unlike [prior work], we [difference
+in our approach]."]
+
+
+% ============================================================
+%  SECTION 2.2: [TOPIC B]
+%  -----------------------------------------------------------
+%  Lap lai cau truc nhu Section 2.1.
+%  Goi y topic: phuong phap ky thuat trung tam thu 2 cua luan van
+%  Vi du: Vector Databases, Small Language Models, 
+%         Intent Classification, Transfer Learning, etc.
+% ============================================================
+
+\section{[Topic B -- e.g., Vector Databases and Embeddings]}
+
+% *** VIET NOI DUNG SECTION 2.2 TAI DAY ***
+
+[Paragraph 1: What is Topic B and why is it relevant to
+your system?]
+
+[Paragraph 2-3: Review key papers. Use the pattern:
+"[Author] proposed [X], which [does Y] by [mechanism Z].
+A key advantage is [A]; however, [limitation B] makes it
+less suitable for [context]."]
+
+[Closing paragraph: How does Topic B connect to your design
+choices in Chapter 3?]
+
+
+% ============================================================
+%  SECTION 2.3: [TOPIC C -- cong trinh lien quan truc tiep]
+%  -----------------------------------------------------------
+%  Day thường la section quan trong nhat: cac he thong / paper
+%  lam viec giong nhat voi luan van cua ban.
+%  Phai chi ra ro rang ban khac gi / tot hon.
+% ============================================================
+
+\section{[Topic C -- e.g., Educational QA Systems]}
+
+% *** VIET NOI DUNG SECTION 2.3 TAI DAY ***
+
+[Paragraph 1: Overview of work most directly related to
+yours -- same domain or same technical approach applied to
+a similar problem.]
+
+[Paragraph 2: Describe the most similar systems. Be fair
+about their strengths.]
+
+[Paragraph 3: Identify the gaps -- what do these systems
+NOT handle that your thesis addresses?
+Use: "However, none of the above systems address [gap].
+     In our setting, [gap] is a critical requirement
+     because [reason]."]
+
+[Closing paragraph: "This thesis differs from prior work
+in [N] key respects: [1]..., [2]..., and [3]..."]
+
+
+% ============================================================
+%  SECTION 2.4: [TOPIC D -- neu can, otherwise skip]
+%  -----------------------------------------------------------
+%  Them section neu thesis cua ban co nhieu component khac nhau.
+%  Vi du: Multilinguality, Evaluation Methodology, etc.
+% ============================================================
+
+% Optional: Add Section 2.4 if needed
+
+
+% ============================================================
+%  SECTION 2.5: SUMMARY (optional but recommended)
+%  -----------------------------------------------------------
+%  Neu thesis co nhieu section trong Chapter 2,
+%  them mot phan tom tat cuoi chapter la tot.
+%  Neu chi co 2-3 section, co the bo qua.
+%
+%  Noi dung phan Summary:
+%  - Tom tat nhung gi da duoc xay dung truoc day
+%  - Neu ro khoang trong (gap) ma thesis nay dap ung
+%  - Lam cau noi sang Chapter 3
+%
+%  Vi du ket thuc Chapter 2:
+%  "The literature reviewed above reveals that while [Topic A]
+%   has matured significantly, its application to [specific
+%   domain] -- particularly under [constraint] -- remains
+%   underexplored. The work closest to ours is [X], but it
+%   does not address [gap 1] or [gap 2]. The system
+%   described in Chapter 3 is designed to close these gaps."
+% ============================================================
+
+\section{Summary}
+
+% *** VIET SUMMARY CUA CHAPTER 2 TAI DAY ***
+
+[Write 1-2 paragraphs that:
+(1) Briefly synthesize what the reviewed literature has
+    established.
+(2) Clearly state the gap(s) that your thesis fills.
+(3) Bridge to Chapter 3 with one sentence.]
+

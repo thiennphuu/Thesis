@@ -1,0 +1,147 @@
+% ============================================================
+%  THESIS TEMPLATE -- International University VNU-HCM
+%  School of Computer Science and Engineering
+%
+%  HUONG DAN SU DUNG TEMPLATE:
+%  1. Upload toan bo thu muc nay len Overleaf (zip va upload)
+%  2. Dat main.tex la file bien dich chinh (Overleaf tu detect)
+%  3. Chinh sua thong tin sinh vien trong phan \newcommand ben duoi
+%  4. Viet noi dung vao tung file chapter_X.tex tuong ung
+%  5. Xoa het cac dong comment HUONG DAN khi da hoan thanh
+%
+%  LUU Y: Template dung tieng Anh khong dau de tranh loi Unicode
+% ============================================================
+
+\documentclass[12pt, a4paper, oneside]{report}
+
+%--- PACKAGES ---------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{float}
+\usepackage{amsmath,amssymb}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{natbib}
+\usepackage[protrusion=true, expansion=false]{microtype}
+\usepackage{parskip}
+
+%--- PAGE LAYOUT -----------------------------------------------
+\geometry{a4paper, top=2.5cm, bottom=2.5cm, left=3.5cm, right=2.5cm}
+\setstretch{1.5}
+
+%--- HYPERREF --------------------------------------------------
+\hypersetup{
+  colorlinks=true, linkcolor=black,
+  citecolor=blue,  urlcolor=blue
+}
+
+%--- CODE LISTING STYLE ----------------------------------------
+\lstdefinestyle{codestyle}{
+  backgroundcolor=\color{gray!8},
+  basicstyle=\ttfamily\footnotesize,
+  breaklines=true, numbers=left,
+  numberstyle=\tiny\color{gray},
+  frame=single, rulecolor=\color{gray!40},
+  tabsize=2, keepspaces=true
+}
+\lstset{style=codestyle}
+
+%--- HEADER / FOOTER -------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{\nouppercase{\leftmark}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+%--- CHAPTER TITLE FORMAT --------------------------------------
+\titleformat{\chapter}[display]
+  {\normalfont\Large\bfseries}{Chapter \thechapter}{12pt}{\large}
+\titlespacing*{\chapter}{0pt}{-10pt}{20pt}
+
+%===============================================================
+%  STUDENT INFORMATION -- CHINH SUA PHAN NAY TRUOC KHI VIET
+%===============================================================
+\newcommand{\thesistitle}{Explainable AI and Fairness Analysis for Credit Default Prediction Using Ensemble Machine Learning Models}
+\newcommand{\studentname}{Tr\`{\^a}n Thi\^en Phu}
+\newcommand{\studentid}{ITITIU22124}
+\newcommand{\supervisorname}{Msc Nguy\~{\^e}n Trung Ngh\~{i}a}
+\newcommand{\submissiondate}{October 2026}
+\newcommand{\department}{School of Computer Science and Engineering}
+\newcommand{\university}{International University -- Vietnam National University HCMC}
+\newcommand{\thesistype}{Undergraduate Thesis}
+
+%===============================================================
+\begin{document}
+
+%--- TITLE PAGE ------------------------------------------------
+\begin{titlepage}
+  \centering
+  \vspace*{0.5cm}
+  {\large\bfseries VIETNAM NATIONAL UNIVERSITY HO CHI MINH CITY\\[4pt]
+   INTERNATIONAL UNIVERSITY\\[6pt]
+   \department\\[2cm]}
+
+  % LUU Y: Them file logo vao thu muc /images/
+  % neu chua co logo, comment dong \includegraphics ben duoi
+  \includegraphics[width=3.5cm]{images/IU_logo}\\[1.5cm]
+
+  {\LARGE\bfseries \thesistitle}\\[1.5cm]
+
+  {\large \thesistype}\\[2cm]
+
+  \begin{tabular}{ll}
+    \textbf{Author:}     & \studentname\ (\studentid)\\[6pt]
+    \textbf{Supervisor:} & \supervisorname\\
+  \end{tabular}\\[2cm]
+
+  \vfill
+  {\large \university\\[4pt] \submissiondate}
+\end{titlepage}
+
+%--- FRONT MATTER ----------------------------------------------
+\pagenumbering{roman}
+\setcounter{page}{1}
+
+\include{abstract}
+\include{acknowledgments}
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+%--- MAIN MATTER -----------------------------------------------
+\cleardoublepage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\include{chapter1_introduction}
+\include{chapter2_related_work}
+\include{chapter3_methodology}
+\include{chapter4_implementation}
+\include{chapter5_results}
+\include{chapter6_conclusion}
+
+%--- BIBLIOGRAPHY ----------------------------------------------
+\bibliographystyle{plainnat}
+\bibliography{bibliography}
+
+%--- APPENDIX (optional) ---------------------------------------
+% \appendix
+% \include{appendix_a}
+
+\end{document}
