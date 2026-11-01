@@ -1,298 +1,204 @@
-% ============================================================
-%  CHAPTER 3: METHODOLOGY / SYSTEM DESIGN
-% ============================================================
-%
-%  VAI TRO CUA CHAPTER 3:
-%  Day la TRAI TIM cua luan van ky thuat. Ban mo ta THIET KE
-%  cua he thong / phuong phap: tai sao chon kien truc nay,
-%  tai sao thiet ke tung component nhu vay.
-%
-%  PHAN BIET "METHODOLOGY" VA "IMPLEMENTATION":
-%    METHODOLOGY (Chapter 3) = THIET KE + LY THUYET
-%      "What the system does and why it was designed that way."
-%      Tap trung vao kien truc, quyet dinh thiet ke, cac cong
-%      thuc va ly thuyet dung lam nen tang.
-%
-%    IMPLEMENTATION (Chapter 4) = HIEN THUC HOA
-%      "How the system was built in practice."
-%      Tap trung vao cong cu, thu vien, code, cau hinh cu the.
-%
-%  VID DU PHAN BIET:
-%    Chapter 3: "The system uses cosine similarity to rank
-%                retrieved documents because it is invariant
-%                to vector magnitude, unlike Euclidean
-%                distance, making it more robust for comparing
-%                sentence embeddings of different lengths."
-%    Chapter 4: "Cosine similarity is computed using the
-%                Qdrant client library (v1.7.0) with
-%                HNSW indexing, configured at ef=128."
-%
-%  LOI SAI PHO BIEN:
-%  1. Viet Chapter 3 nhu huong dan cai dat (setup guide).
-%     Chapter 3 phai giai thich QUYET DINH, khong chi HANH DONG.
-%  2. Mo ta HET MOI THU ma khong giai thich tai sao.
-%     Moi component phai co ly do chon no.
-%  3. Quen khong co system overview / architecture figure.
-%     Phai co it nhat 1 hinh mo ta toan bo pipeline.
-% ============================================================
-
 \chapter{Methodology}
 \label{chap:methodology}
 
-% ============================================================
-%  OPENING PARAGRAPH (bat buoc)
-%  -----------------------------------------------------------
-%  Gioi thieu ngan gon cau truc cua chapter nay.
-%  Neu ro cac section chinh theo thu tu pipeline / thiet ke.
-%
-%  Vi du:
-%  "This chapter presents the design of the proposed [system].
-%   Section 3.1 provides a high-level overview of the
-%   system architecture. Sections 3.2 through 3.5 then
-%   describe each major component in the order they appear
-%   in the processing pipeline: [component 1], [component 2],
-%   [component 3], and [component 4].
-%   Section 3.6 explains the parameter selection rationale."
-%
-%  LUU Y: Thu tu cac section nen theo thu tu xu ly cua he thong.
-%  Dieu nay giup nguoi doc hieu luong du lieu di qua dau.
-% ============================================================
+This chapter defines the experimental design used to study prediction,
+explainability, and fairness as one connected analysis. It describes the
+dataset, the audit of the earlier preparation pipeline, the cleaned-data
+protocol, the LightGBM variants, and the metrics for the four research
+questions. Uncertainty, validity threats, and ethical boundaries are specified
+before the results are reported.
 
-% *** VIET OPENING PARAGRAPH TAI DAY ***
-[Write the opening paragraph that maps out this chapter.
-Follow the pipeline order -- input -> processing -> output.]
+\section{Study Design}
+\label{sec:study-design}
 
-
-% ============================================================
-%  SECTION 3.1: SYSTEM OVERVIEW
-%  -----------------------------------------------------------
-%  Day la section quan trong nhat trong Chapter 3.
-%  Nguoi doc can thay "buc tranh lon" truoc khi di vao chi tiet.
-%
-%  NOI DUNG BAT BUOC:
-%  (1) Mo ta tong the he thong lam gi
-%  (2) Liet ke cac component chinh
-%  (3) Mo ta luong xu ly (processing flow) tu dau den cuoi
-%  (4) FIGURE: So do kien truc he thong (architecture diagram)
-%
-%  HUONG DAN VE FIGURE KIEN TRUC:
-%  - Phai co it nhat 1 figure o Section 3.1
-%  - Figure phai hien thi: input -> cac component -> output
-%  - Ten cac component trong figure phai khop voi ten trong text
-%  - Figure caption phai mo ta du (ai khong doc text van hieu)
-%
-%  VI DU VIET SYSTEM OVERVIEW TOT:
-%  "The system operates as a pipeline with N stages.
-%   When a query arrives, it is first [step 1: preprocessed].
-%   [Step 2: Intent classification] then determines which
-%   retrieval path the query should follow. Depending on the
-%   classified intent, the query is routed to either
-%   [Path A] or [Path B]. The retrieved content is then
-%   passed to [generation component], which produces the
-%   final response. Figure~\ref{fig:arch} illustrates this
-%   flow."
-%
-%  MIEN DICH TU VAN DE THUC TE SANG KIEN TRUC:
-%    Van de: "Students ask prerequisite questions"
-%    -> Component: "Intent classifier labels query as
-%                   'prerequisite'"
-%    -> Action: "System queries SQL database"
-%    -> Output: "Templated answer returned"
-%  Lam ro khi nao dung rule-based, khi nao dung ML.
-% ============================================================
-
-\section{System Overview}
-\label{sec:overview}
-
-% *** VIET SYSTEM OVERVIEW TAI DAY ***
-[Describe the overall system in 2-4 paragraphs. Cover:
-(1) The problem the system solves at a high level
-(2) The main components (list them by name)
-(3) The processing flow from input to output
-(4) Reference the architecture figure below]
+The study uses one cleaned dataset and one primary stratified 80/20 split.
+Four model conditions are compared with the same LightGBM configuration and
+decision threshold: the full model with age (M0), the age-blind model without
+age (M1), and reweighed versions of both models (M0-RW and M1-RW). The same
+test applicants are used for all comparisons. Ten additional stratified splits
+are used to assess stability.
 
 \begin{figure}[H]
   \centering
-  % CHEN HINH KIEN TRUC CUA BAN VAO DAY
-  % Doi file hinh thanh dang PNG hoac PDF, luu vao thu muc images/
-  \IfFileExists{images/architecture}{%
-    \includegraphics[width=0.95\textwidth]{images/architecture}%
-  }{%
-    \fbox{\parbox[c][5cm][c]{0.9\textwidth}{\centering Architecture figure not added yet}}%
-  }
-  \caption{[System architecture overview: describe the main
-    components and how data flows through them. A good caption
-    should be self-contained -- a reader who sees only this
-    figure and its caption should understand the overall flow.]}
-  \label{fig:arch}
+  \fbox{\parbox[c][4cm][c]{0.9\textwidth}{\centering
+  Dataset audit $\rightarrow$ cleaning and encoding $\rightarrow$ stratified
+  split $\rightarrow$ LightGBM variants $\rightarrow$ prediction, SHAP, fairness,
+  proxy, and mitigation analysis}}
+  \caption{Study pipeline. The same cleaned data, model configuration, and
+  decision threshold are used across the four connected analyses.}
+  \label{fig:study-pipeline}
 \end{figure}
 
+\section{Dataset}
+\label{sec:dataset}
 
-% ============================================================
-%  SECTION 3.2: [COMPONENT 1 -- e.g., Data / Knowledge Base]
-%  -----------------------------------------------------------
-%  Bat dau voi component dau tien trong pipeline.
-%  Thuong la du lieu / knowledge base / bieu dien du lieu.
-%
-%  CAC DIEU CAN CO TRONG MOI COMPONENT SECTION:
-%  (1) Mo ta component lam gi (1 doan)
-%  (2) Ly do chon thiet ke nay (1 doan)
-%      "We chose X over Y because..."
-%      "This design decision was motivated by..."
-%  (3) Chi tiet ky thuat (subsections neu phuc tap)
-%  (4) Figure hoac table neu giup hieu ro hon
-%
-%  CHO PHAN DATA/KNOWLEDGE BASE, NEN BAO GOM:
-%  - Nguon du lieu (data sources)
-%  - Kich thuoc va dac diem du lieu
-%  - Cach xu ly / clean / format du lieu
-%  - Bieu dien du lieu (representation): tai sao chon format nay
-% ============================================================
+\subsection{Source and Target}
 
-\section{[Component 1: e.g., Knowledge Base Construction]}
-\label{sec:knowledge_base}
+The study uses the public Credit Risk Dataset, which contains structured
+borrower and loan information with a binary loan-default target. After removal
+of 165 exact duplicate rows and seven logically invalid records, 32,409 loans
+remain. The final default rate is 21.9\%. The target is \texttt{loan\_status},
+where one denotes default and zero denotes no default.
 
-% *** VIET NOI DUNG COMPONENT 1 TAI DAY ***
+\subsection{Variables}
 
-[Paragraph 1: What does this component do and what problem
-does it solve?]
+The 11 recorded predictors are \texttt{person\_age}, \texttt{person\_income},
+\texttt{person\_home\_ownership}, \texttt{person\_emp\_length},
+\texttt{loan\_intent}, \texttt{loan\_grade}, \texttt{loan\_amnt},
+\texttt{loan\_int\_rate}, \texttt{loan\_percent\_income},
+\texttt{cb\_person\_default\_on\_file}, and
+\texttt{cb\_person\_cred\_hist\_length}. Age is the sensitive attribute. The
+categorical variables are retained as categorical inputs rather than being
+treated as arbitrary numeric codes.
 
-[Paragraph 2: What are the data sources? Describe size,
-format, and characteristics.]
+\subsection{Age Groups}
 
-[Paragraph 3: How did you process or structure the data?
-Why did you choose this representation?]
+The protected groups are defined as $A=0$ for applicants under 25 and $A=1$
+for applicants aged 25 and above. The cleaned data range from age 20 to 94.
+Applicants aged 25--46 account for 19,637 records, while only 552 applicants
+are aged 47 or older. The two groups contain 12,220 and 20,189 applicants,
+respectively, with observed default rates of 23.3\% and 21.0\%.
 
-% Chi them subsections neu component nay phuc tap
-% \subsection{Data Sources}
-% \subsection{Data Preprocessing}
-% \subsection{Document Representation}
+\subsection{Association of Predictors with Age}
 
+Credit-history length has a strong association with age (Spearman
+$\rho=0.807$). Income ($\rho=0.144$), employment length ($\rho=0.107$), and
+loan intent (Cramer's $V=0.167$) show weaker associations. These variables are
+therefore treated as candidate proxies in the age-blind audit. Association is
+not interpreted as proof of a causal proxy relationship.
 
-% ============================================================
-%  SECTION 3.3: [COMPONENT 2 -- e.g., Core Technical Method]
-%  -----------------------------------------------------------
-%  Day thuong la phan ky thuat chinh cua he thong.
-%  Can co CONG THUC TOAN HOC neu phuong phap co nen ly thuyet.
-%
-%  HUONG DAN VE CONG THUC:
-%  - Moi cong thuc can duoc danh so: \begin{equation}...\end{equation}
-%  - Giai thich tat ca ky hieu ngay sau cong thuc:
-%    "where $\mathbf{v}_q$ is the query vector, $k$ is..."
-%  - Giai thich TAI SAO dung cong thuc nay, khong chi la no la gi
-%
-%  Vi du viet cong thuc tot:
-%  "Similarity between query and document is computed as:
-%   \begin{equation}
-%     \text{sim}(\mathbf{v}_q, \mathbf{v}_d) = 
-%     \frac{\mathbf{v}_q \cdot \mathbf{v}_d}
-%          {\|\mathbf{v}_q\| \cdot \|\mathbf{v}_d\|}
-%   \end{equation}
-%   where $\mathbf{v}_q$ is the query embedding vector and
-%   $\mathbf{v}_d$ is the document embedding vector.
-%   Cosine similarity was chosen over Euclidean distance
-%   because it is invariant to vector magnitude, which
-%   matters when comparing sentence embeddings of varying
-%   lengths."
-% ============================================================
+\section{Data Preparation}
+\label{sec:data-preparation}
 
-\section{[Component 2: e.g., Retrieval / Core Method]}
-\label{sec:retrieval}
+\subsection{Audit of the Earlier Pipeline}
 
-% *** VIET NOI DUNG COMPONENT 2 TAI DAY ***
+The earlier pipeline kept duplicate rows, did not validate impossible ages or
+employment lengths, imputed missing values before splitting, integer-encoded all
+categorical columns, engineered four ratios, removed observations using a
+z-score rule, and applied scaling to a tree model. Re-running that procedure
+showed that z-score deletion removed all applicants aged 47 or older. Two
+engineered ratios also recovered age exactly, allowing an age-predictability
+classifier to obtain ROC-AUC 1.000. These behaviors would make a fairness
+analysis misleading.
 
-[Paragraph 1: Describe what this component does in the
-overall pipeline.]
+\subsection{Preparation Used in This Thesis}
 
-[Paragraph 2: Describe the core technical mechanism.
-Include the key formula if applicable.]
+The revised procedure removes exact duplicates, removes only seven logically
+invalid records, keeps distributional outliers, and leaves missing values for
+LightGBM's native missing-value handling. It uses the 11 recorded predictors
+without age-derived ratios. The data are split 80/20 with a fixed seed and
+stratification on the joint age-group and outcome label. No transformation is
+fit on the complete dataset before the split.
 
-% Example formula -- replace with your own:
-\begin{equation}
-  \text{[formula name]} = \frac{[numerator]}{[denominator]}
-  \label{eq:main}
-\end{equation}
-
-where $[\text{symbol 1}]$ is [description], and
-$[\text{symbol 2}]$ is [description].
-
-[Paragraph 3: Justify your design choices. Why this
-approach and not an alternative?]
-
-
-% ============================================================
-%  SECTION 3.4: [COMPONENT 3]
-%  -----------------------------------------------------------
-%  Tiep tuc moi thanh phan trong pipeline.
-%  Lap lai cau truc: mo ta -> ly do chon -> chi tiet ky thuat
-% ============================================================
-
-\section{[Component 3: e.g., Classification / Routing]}
-\label{sec:classification}
-
-% *** VIET NOI DUNG COMPONENT 3 TAI DAY ***
-
-[Describe this component following the same pattern:
-(1) What it does, (2) Why this design, (3) Technical details]
-
-% Include a table if this component involves multiple cases:
-% Example: Intent categories and their handling paths
 \begin{table}[H]
-  \centering
-  \caption{[Table title -- describe what the table shows]}
-  \label{tab:component3}
-  \begin{tabular}{lp{5cm}p{4cm}}
-    \toprule
-    \textbf{{[Column 1]}} & \textbf{{[Column 2]}} & \textbf{{[Column 3]}}\\
-    \midrule
-    {[row 1, col 1]} & {[row 1, col 2]} & {[row 1, col 3]}\\
-    {[row 2, col 1]} & {[row 2, col 2]} & {[row 2, col 3]}\\
-    \bottomrule
-  \end{tabular}
+\centering
+\caption{Group sizes after the stratified split.}
+\label{tab:group-sizes}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Set and group} & \textbf{All} & \textbf{Good} & \textbf{Bad}
+& \textbf{Default rate}\\
+\midrule
+Training, under 25 & 9,776 & 7,494 & 2,282 & 23.3\%\\
+Training, 25 and above & 16,151 & 12,762 & 3,389 & 21.0\%\\
+Test, under 25 & 2,444 & 1,874 & 570 & 23.3\%\\
+Test, 25 and above & 4,038 & 3,191 & 847 & 21.0\%\\
+\bottomrule
+\end{tabular}
 \end{table}
 
+\section{Prediction Model and Protocol}
 
-% ============================================================
-%  SECTION 3.5: [COMPONENT 4 -- e.g., Generation / Output]
-%  -----------------------------------------------------------
-%  Component cuoi cung trong pipeline: tao ra output.
-%  Can mo ta ro rang: khi nao dung rule-based template,
-%  khi nao dung language model / ML model.
-% ============================================================
+LightGBM is selected because it is effective for tabular data, exposes gain
+and split importance, and supports exact TreeSHAP explanations. All variants
+use 100 estimators, learning rate 0.1, maximum depth 6, 31 leaves,
+\texttt{colsample\_bytree}=0.8, a fixed random seed of 42, and
+\texttt{scale\_pos\_weight}=3.57. No hyperparameter is tuned on the test set.
 
-\section{[Component 4: e.g., Response Generation]}
-\label{sec:generation}
+The model returns a default score $s(x)$. An applicant is rejected when
+$s(x)\geq 0.5$ and approved otherwise. Default is the positive class for
+predictive metrics, while approval is the favorable decision for fairness
+metrics.
 
-% *** VIET NOI DUNG COMPONENT 4 TAI DAY ***
+\section{Predictive Performance}
 
-[Describe the output generation component.
-Be explicit about: when is the output deterministic/templated
-vs. when does it use a learned model? Why?]
+Accuracy, precision, recall, F1, ROC-AUC, and precision-recall AUC are reported.
+ROC-AUC measures threshold-independent ranking, while the remaining measures
+describe behavior at the fixed threshold. Recall receives particular attention
+because missed defaults are costly to a lender. ROC-AUC is also computed
+separately for the two age groups.
 
+\section{Explainability Analysis (RQ1)}
 
-% ============================================================
-%  SECTION 3.6: PARAMETER SELECTION (neu co)
-%  -----------------------------------------------------------
-%  Neu he thong co cac tham so quan trong (k, threshold,
-%  model size, etc.), giai thich tai sao ban chon gia tri do.
-%
-%  Cach viet tot:
-%  "The retrieval depth k=3 was determined empirically:
-%   k=1 was insufficient when the top result was marginally
-%   incorrect; k=5 and above diluted the context window.
-%   k=3 provided the best balance in preliminary runs."
-%
-%  Neu ban toi uu tham so bang grid search hoac ablation,
-%  tham chieu sang Chapter 4/5 noi ban bao cao ket qua.
-% ============================================================
+For M0, LightGBM split importance counts the number of splits using a feature,
+and gain importance sums the loss reduction from those splits. TreeSHAP
+computes a contribution $\phi_j(x)$ for every feature and test applicant.
+Global SHAP importance is the mean of $|\phi_j(x)|$. The three normalized
+rankings are compared using Spearman correlation, Kendall's $\tau$, and top-3
+and top-5 overlap. Local explanations are inspected for correctly rejected,
+correctly approved, and under-25 rejected applicants. These are model
+attributions, not causal effects.
 
-\section{Parameter Selection}
-\label{sec:params}
+\section{Fairness Assessment (RQ2)}
 
-% *** VIET PARAMETER SELECTION TAI DAY (hoac xoa section neu khong can) ***
+For group $a$, acceptance rate, true-positive rate on the good class, and
+false-positive rate are denoted by $\widehat{AR}_a$, $\widehat{TPR}_a$, and
+$\widehat{FPR}_a$. The primary signed gaps are
+\begin{equation}
+ DPD = \widehat{AR}_0-\widehat{AR}_1,\qquad
+ EOD = \widehat{TPR}_0-\widehat{TPR}_1.
+\end{equation}
+A negative value means that applicants under 25 are approved less often.
+Absolute gaps, the disparate-impact ratio, the false-positive-rate difference,
+and group-wise ROC-AUC are also reported. The boundary is checked with the
+alternative definition ``25 and under'' versus ``over 25''.
 
-[Explain the key parameters in your system and how you
-selected their values. Was it empirical? Theoretical?
-Based on prior work? Be honest about what was tested
-vs. what was set by convention.]
+\section{Age-Blind Model and Proxy Audit (RQ3)}
 
+M1 is trained after removing \texttt{person\_age}. Remaining DPD and EOD are
+compared with M0 using paired bootstrap intervals. A separate LightGBM model
+predicts age group from the remaining predictors; ROC-AUC near 0.5 indicates
+little age information, whereas a high value indicates that age information
+remains.
+
+The SHAP gap decomposition is
+\begin{equation}
+\overline{m}_0-\overline{m}_1=\sum_j\Delta_j,\qquad
+\Delta_j=\overline{\phi}_{j,0}-\overline{\phi}_{j,1}.
+\end{equation}
+Features are ranked by $|\Delta_j|$ and checked against the association
+analysis. Candidate features are then removed one at a time and the changes
+in DPD, EOD, and ROC-AUC are recorded.
+
+\section{Bias Mitigation (RQ4)}
+
+Reweighing assigns each training row the weight
+\begin{equation}
+w(a,y)=\frac{P(A=a)P(Y=y)}{P(A=a,Y=y)}.
+\end{equation}
+The weights are computed using training data only and passed to LightGBM as
+sample weights. The observed weights are 1.019 and 0.937 for under-25 good
+and bad applicants, and 0.989 and 1.042 for the older group. M0-RW and M1-RW
+are compared with their unweighted counterparts using fairness gaps and all
+predictive metrics. Threshold adjustment is not used because it requires
+age at decision time and an additional validation procedure.
+
+\section{Uncertainty, Validity, and Ethics}
+
+The test set is resampled 2,000 times with replacement to obtain percentile
+95\% bootstrap intervals. Paired resamples are used for model comparisons.
+The complete pipeline is repeated on ten further stratified splits to assess
+training variation. The dataset is simulated, has a narrow age distribution,
+and contains outcomes only for granted loans. The age boundary is arbitrary,
+and SHAP cannot establish causality. The dataset is public and contains no
+personal identifiers. Age is used for auditing and training-time reweighing,
+not as a justification for automated lending. The model is a decision-support
+experiment and does not establish legal compliance.
+
+\section{Summary}
+
+The methodology keeps the data split, model configuration, threshold, and
+evaluation definitions fixed so that changes can be attributed to removing age
+or applying reweighing. This design provides the basis for answering all four
+research questions without confusing a preprocessing artifact with a fairness
+finding.

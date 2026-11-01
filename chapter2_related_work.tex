@@ -1,223 +1,138 @@
 % ============================================================
-%  CHAPTER 2: RELATED WORK / LITERATURE REVIEW
-% ============================================================
-%
-%  VAI TRO CUA CHAPTER 2:
-%  Chapter 2 co hai nhiem vu song song:
-%    (a) Xay dung nen tang kien thuc cho nguoi doc (background)
-%    (b) Dinh vi luan van cua ban trong khong gian nghien cuu
-%        hien tai (related work)
-%
-%  Nhieu sinh vien nham lan hai dieu nay. Hay nho:
-%    BACKGROUND = "Day la kien thuc nen can hieu de doc luan van"
-%    RELATED WORK = "Day la nhung gi nguoi khac da lam, va tai
-%                    sao cong trinh cua minh khac / tot hon"
-%
-%  TU DUY CHUAN CHO CHAPTER 2:
-%  Ban khong viet bai tong quan Wikipedia. Ban dang xay dung
-%  mot ARGUMENT: "Cac cong trinh truoc da tien xa den diem X,
-%  nhung van con gap Y, do do cong trinh cua minh can thiet."
-%
-%  CAC LOI SAI PHO BIEN:
-%  1. "Paper dump": Liet ke nhieu paper ma khong giai thich
-%     lien quan den luan van cua ban the nao.
-%     -> SAI: "Smith et al. [5] proposed method X."
-%     -> DUNG: "Smith et al. [5] proposed X, which achieves
-%               high accuracy but requires [resource/condition]
-%               not available in our setting."
-%
-%  2. Khong co phan so sanh / gan ket voi thesis cua ban.
-%     Moi subsection nen ket thuc bang 1-2 cau noi:
-%     "In this work, we adopt / extend / depart from this
-%     approach because..."
-%
-%  3. Chi mo ta, khong phan tich. Phai chi ra diem manh /
-%     yeu cua tung huong tiep can.
-%
-%  BAO NHIEU TAI LIEU THAM KHAO?
-%  Undergrad thesis: 15-30 nguon la phu hop.
-%  Nen bao gom: journal articles, conference papers (EMNLP,
-%  ACL, ICLR, NeurIPS, AAAI, CVPR, etc.), va 1-2 textbook.
-%  Tranh chi trich dan website / blog.
-%
-%  CAM MOT CUM TU HAY DUNG KHI TONG QUAN:
-%    "[Author] et al.~\cite{key} introduced / proposed /
-%     demonstrated / showed that..."
-%    "A key limitation of [approach] is that it..."
-%    "Unlike [prior work], our system..."
-%    "Building on the work of [X], this thesis..."
-%    "To the best of our knowledge, no prior work has
-%     addressed [specific gap]."
+%  CHAPTER 2: RELATED WORK
 % ============================================================
 
 \chapter{Related Work}
 \label{chap:related}
 
-% ============================================================
-%  OPENING PARAGRAPH (bat buoc)
-%  -----------------------------------------------------------
-%  Doan dau chapter 2 can:
-%  (1) Giai thich tai sao ban chon cac topic nay de review
-%  (2) Mo ta ngan gon cac section se co trong chapter nay
-%
-%  Vi du:
-%  "Building [your system type] requires drawing on several
-%   intersecting research areas. Section 2.1 reviews
-%   [Topic A], which underpins [component 1].
-%   Section 2.2 covers [Topic B], with particular attention
-%   to [aspect relevant to your work].
-%   Section 2.3 examines [Topic C]. Each section closes
-%   with a note on how the reviewed work connects to the
-%   design choices in this thesis."
-% ============================================================
+The four research questions in Section~\ref{sec:research-questions} sit at the intersection of credit scoring, explanation, and group fairness. This chapter reviews those areas in the order the questions ask them. Section~\ref{sec:related-ensembles} covers ensemble models for credit-default prediction and the reason for using LightGBM. Section~\ref{sec:related-explain} compares SHAP with a tree model's built-in feature importance, which is the subject of the first research question. Section~\ref{sec:related-fairness} defines demographic parity and equal opportunity for age groups, which is the second question. Section~\ref{sec:related-proxy} reviews what happens when age is removed and other variables carry age information, which is the third question. Section~\ref{sec:related-mitigation} reviews reweighing and threshold adjustment and the performance cost of reducing a disparity, which is the fourth question. Section~\ref{sec:related-rq} then states the answer each body of work supports, and the measurement this thesis still has to make.
 
-% *** VIET OPENING PARAGRAPH TAI DAY ***
-[Write 1 paragraph explaining what topics you will cover
-and why these specific topics are relevant to your thesis.
-Each topic should correspond to a design decision or
-component in your system.]
+\section{Ensemble Models for Credit-Default Prediction}
+\label{sec:related-ensembles}
 
+Credit scoring estimates the probability that a borrower will fail to repay. Logistic regression dominated early scorecards because each coefficient has a direct reading. \citet{baesens2003benchmark} compared a range of classifiers on real credit data and showed that more flexible models can improve discrimination, while simple models remain competitive. \citet{lessmann2015benchmark} repeated that comparison a decade later with 41 classifiers and several datasets. Heterogeneous ensembles and gradient-boosting methods were among the strongest models on ranking measures such as the area under the receiver operating characteristic curve (ROC-AUC). \citet{yeh2009default} reached a related conclusion on credit-card default: the choice of classifier changes both accuracy and the estimated probability of default. Together, these studies justify an ensemble model for this thesis and also show that a gain in ROC-AUC is a property of a dataset and a training setup, rather than a guarantee of every boosting algorithm.
 
-% ============================================================
-%  SECTION 2.1: [TOPIC A -- nen tang chinh]
-%  -----------------------------------------------------------
-%  Huong dan chung cho moi section:
-%
-%  BUOC 1: Mo ta van de / khai niem chinh (1 doan)
-%    - Day la gi? Tai sao quan trong?
-%    - Dung kien thuc nen, khong chi la trich dan
-%
-%  BUOC 2: Tong quan cac cong trinh chinh (2-4 doan)
-%    - Nhom cac paper theo huong tiep can, khong liet ke lan luot
-%    - Moi nhom: mo ta chung, neu diem manh, neu diem yeu
-%
-%  BUOC 3: Ket luan va gan ket (1 doan)
-%    - Cac cong trinh nay informd he thong cua ban the nao?
-%    - Ban tiep thu, mo rong, hay khac gi so voi cac huong nay?
-%
-%  GHI CHU VE CITATION:
-%  Dung natbib: \cite{key} cho (Author, Year)
-%               \citet{key} cho "Author (Year) showed..."
-%  Vi du:
-%    \citet{lewis2020} formally defined the RAG framework as...
-%    Recent surveys~\cite{gao2023survey} categorize RAG into...
-% ============================================================
+Gradient boosting builds an additive model of decision trees. Each new tree is fit to the errors that remain after the earlier trees. \citet{chen2016xgboost} made this approach practical at scale with XGBoost, through a regularized objective and a split finder that handles sparse inputs. \citet{ke2017lightgbm} introduced LightGBM, which grows trees leaf-wise and bins continuous features into histograms. Those choices keep training fast on large tables of mixed numerical and categorical variables. Borrower data have exactly that form, so LightGBM is a natural model for default prediction.
 
-\section{[Topic A -- e.g., Retrieval-Augmented Generation]}
+\citet{delange2022xai} trained LightGBM on unsecured consumer loans from a Norwegian bank and obtained clearer discrimination than the bank's logistic-regression scorecard. The variables with the greatest influence were behavioral: the volatility of utilized credit, remaining credit as a share of the limit, and the length of the customer relationship. That finding matters for the first research question. The most influential feature is a fact about the data, not a fixed property of LightGBM. In the German credit data that fairness studies commonly use \citep{hofmann1994german}, the variables that usually lead are checking-account status, credit history, loan duration, and credit amount. This thesis therefore ranks features on its own training run. The literature identifies which families of variables tend to matter, and it shows that an ensemble can outperform a linear scorecard.
 
-% *** VIET NOI DUNG SECTION 2.1 TAI DAY ***
+This thesis uses LightGBM because it is a strong classifier for tabular credit data, because it exposes split counts and split gains directly, and because TreeSHAP can explain its predictions exactly \citep{lundberg2020treeshap}. Comparing LightGBM with every other ensemble is outside the aim of the study. The model is the object whose explanations, age-group gaps, and mitigation cost are measured in later chapters.
 
-[Paragraph 1: What is Topic A? Define the core concept in
-your own words -- not a dictionary definition, but a
-functional explanation tied to your use case.]
+\section{SHAP and Built-in Feature Importance}
+\label{sec:related-explain}
 
-[Paragraph 2: Describe the foundational/seminal work.
-Use \citet{} for the first mention of each paper.
-Example: "AuthorName (Year) introduced [method], showing
-that [result]. This established [what it proved/enabled]."]
+The first research question asks which feature influences LightGBM the most, and whether SHAP agrees with the importance scores the model already reports. The two families of scores describe different events inside the fitted model.
 
-[Paragraph 3: Describe subsequent developments or variants.
-Group related papers. Note what each group of papers
-improved and what remains unresolved.]
+LightGBM reports two built-in scores. Split importance counts how often a feature is chosen as a splitting variable. Gain importance sums the reduction in training loss at those splits. Both scores are global, and both depend on the shape of the trees. A feature that appears in many small splits can rank high by split count and lower by gain. A feature that appears in a few large splits can rank the other way. Neither score records whether the feature raised or lowered one applicant's predicted default probability.
 
-[Closing paragraph: Connect to your work.
-Example: "The present work adopts [specific technique from
-above] because [reason]. Unlike [prior work], we [difference
-in our approach]."]
+\citet{lundberg2017shap} defined SHAP (SHapley Additive exPlanations) values as the Shapley values of the model's expected output. For one prediction, each feature receives a contribution, and the contributions add up to the difference between that prediction and the average prediction. The attribution satisfies local accuracy, missingness, and consistency. Consistency requires that if a model changes so that a feature's marginal contribution never falls, the importance assigned to that feature never falls either. Several earlier attribution methods can violate that requirement \citep{lundberg2017shap}.
 
+\citet{ribeiro2016lime} proposed LIME, which explains one prediction by fitting a local linear model around it. LIME is widely used, and the explanation depends on the neighborhood from which the surrogate is sampled. \citet{gramegna2021shap} compared SHAP and LIME on an XGBoost model of default among Italian small and medium-sized firms. SHAP attributions formed tighter groups of applicants and, when used themselves as features, produced a higher ROC-AUC than LIME weights. \citet{bussmann2021explainable} explained boosted credit-risk scores for about 15,000 firms with Shapley values and then clustered applicants who shared similar explanations. Both studies support SHAP as an explanation tool for credit risk. Both also explain a boosted tree model, which is the same model family as LightGBM.
 
-% ============================================================
-%  SECTION 2.2: [TOPIC B]
-%  -----------------------------------------------------------
-%  Lap lai cau truc nhu Section 2.1.
-%  Goi y topic: phuong phap ky thuat trung tam thu 2 cua luan van
-%  Vi du: Vector Databases, Small Language Models, 
-%         Intent Classification, Transfer Learning, etc.
-% ============================================================
+\citet{lundberg2020treeshap} introduced TreeSHAP, an exact polynomial-time algorithm for tree ensembles, including gradient boosting. Averaging the absolute SHAP value of a feature across applicants turns the local contributions into a global ranking. That ranking is the appropriate object to place beside LightGBM's gain and split scores.
 
-\section{[Topic B -- e.g., Vector Databases and Embeddings]}
+Published credit studies make this comparison only in part. \citet{delange2022xai} plotted LightGBM split and gain importance next to SHAP and found that the same behavioral variables lead both views. The agreement is informative, and it is still an agreement about the leading group of features rather than proof that the two rankings are identical. Gain rewards a feature that reduces training loss when a tree splits on it. Mean absolute SHAP rewards a feature that moves the predicted probability, averaged over applicants. A feature can be an effective split and still have a modest average SHAP value when its effect changes direction from one applicant to another. SHAP keeps that direction. Gain collapses it into a single positive quantity.
 
-% *** VIET NOI DUNG SECTION 2.2 TAI DAY ***
+The literature therefore answers the first research question as a rule of measurement. No feature is the most influential LightGBM input on every credit dataset. On a given dataset, the leading feature is the one with the largest mean absolute SHAP value, and that ranking is then checked against gain and split importance. Agreement on the top features means the feature is both a useful split and a large contributor to the output. A difference in order is a result in its own right: it marks features whose role depends on direction and on the applicant. This thesis will publish both rankings for the same fitted model. A high gain score, on its own, will be treated as evidence about the trees, and the SHAP ranking will be treated as evidence about the decisions.
 
-[Paragraph 1: What is Topic B and why is it relevant to
-your system?]
+\section{Demographic Parity and Equal Opportunity}
+\label{sec:related-fairness}
 
-[Paragraph 2-3: Review key papers. Use the pattern:
-"[Author] proposed [X], which [does Y] by [mechanism Z].
-A key advantage is [A]; however, [limitation B] makes it
-less suitable for [context]."]
+The second research question asks whether the model treats age groups fairly, measured by demographic parity and equal opportunity. These criteria use only the decision, the true outcome, and group membership \citep{hardt2016equality}. They do not look inside the features.
 
-[Closing paragraph: How does Topic B connect to your design
-choices in Chapter 3?]
+Let \(A = 0\) denote applicants under 25 and \(A = 1\) denote applicants aged 25 and above, which is the split stated in the research questions. \citet{kamiran2012reweighing} studied discrimination-aware learning on credit data with one binary sensitive attribute. The AI Fairness 360 German-credit example uses the same public table and codes age with a threshold of 25, treating the younger group as unprivileged \citep{bellamy2019aif360, hofmann1994german}. Applicants who are exactly 25 years old fall on one side or the other of that threshold depending on the implementation, so this thesis keeps the boundary explicit: under 25 versus 25 and above. Let \(Y = 1\) denote a truly good outcome, meaning the applicant does not default, and let \(\hat{Y} = 1\) denote the favorable decision, meaning the model would accept the applicant. The favorable decision is obtained by comparing the predicted default probability with a threshold.
 
+Demographic parity requires the acceptance rate to be the same in both age groups:
+\begin{equation}
+  P(\hat{Y} = 1 \mid A = 0) = P(\hat{Y} = 1 \mid A = 1).
+  \label{eq:demographic-parity}
+\end{equation}
+The demographic parity difference is the absolute gap between the two acceptance rates. A gap of zero means the model accepts the same fraction of younger and older applicants.
 
-% ============================================================
-%  SECTION 2.3: [TOPIC C -- cong trinh lien quan truc tiep]
-%  -----------------------------------------------------------
-%  Day thường la section quan trong nhat: cac he thong / paper
-%  lam viec giong nhat voi luan van cua ban.
-%  Phai chi ra ro rang ban khac gi / tot hon.
-% ============================================================
+Equal opportunity requires the true positive rate on the good class to be the same in both groups \citep{hardt2016equality}:
+\begin{equation}
+  P(\hat{Y} = 1 \mid Y = 1, A = 0) = P(\hat{Y} = 1 \mid Y = 1, A = 1).
+  \label{eq:equal-opportunity}
+\end{equation}
+The equal opportunity difference is the absolute gap between the acceptance rates of applicants who do not default. A gap of zero means a repaying applicant has the same chance of acceptance in either age group.
 
-\section{[Topic C -- e.g., Educational QA Systems]}
+The two gaps can tell different stories. \citet{dwork2012awareness} and \citet{hardt2016equality} show that demographic parity can hold while one group is accepted only among its qualified members and the other group is accepted more broadly, provided the overall rates match. \citet{hardt2016equality} also note that when the true outcome is associated with group membership, demographic parity rules out the ideal predictor \(\hat{Y} = Y\). In credit data, younger applicants often have a higher observed default rate. A model that ranks risk accurately will then accept them less often. That pattern widens the demographic parity gap and can still leave the equal opportunity gap small, if repaying applicants are accepted at similar rates.
 
-% *** VIET NOI DUNG SECTION 2.3 TAI DAY ***
+\citet{chouldechova2017disparate} and \citet{kleinberg2017tradeoffs} show that equal acceptance rates, equal error rates, and calibration cannot all hold when the base rates differ, except in special cases. A single fairness number is therefore an incomplete description of a credit model. \citet{kozodoi2022fairness} compare the main criteria on several credit datasets and recommend separation, the family that includes equal opportunity and equalized odds, as the more suitable target for a scorecard. Independence, which is demographic parity, is a weaker fit because default rates differ across groups. They also find that several criteria can be approximately satisfied at the same time, so reporting both gaps adds information.
 
-[Paragraph 1: Overview of work most directly related to
-yours -- same domain or same technical approach applied to
-a similar problem.]
+The second research question is answered by computing both gaps, rather than by assuming that a high ROC-AUC implies fair treatment. The under-25 group is the group that this literature treats as unprivileged \citep{kamiran2012reweighing, bellamy2019aif360}. A large demographic parity gap beside a small equal opportunity gap means the model accepts fewer young applicants largely because fewer of them belong to the good class. A large equal opportunity gap means good young applicants are accepted less often than good older applicants. That second gap is the sharper concern for access to credit. The size of either gap on this thesis's split, threshold, and test set is a measurement for the results chapter. The gap is a statistical description of the model. It is not, by itself, a finding of unlawful discrimination.
 
-[Paragraph 2: Describe the most similar systems. Be fair
-about their strengths.]
+\section{Age Removal and Proxy Features}
+\label{sec:related-proxy}
 
-[Paragraph 3: Identify the gaps -- what do these systems
-NOT handle that your thesis addresses?
-Use: "However, none of the above systems address [gap].
-     In our setting, [gap] is a critical requirement
-     because [reason]."]
+The third research question asks whether age bias remains after the age column is removed, and whether SHAP can show which other features take its place. Dropping a sensitive column is often called fairness through unawareness. \citet{hardt2016equality} argue that the approach fails when other features are redundant encodings of the protected attribute. \citet{pedreschi2008discrimination} made the same observation for discrimination-aware data mining: a classifier can reproduce a sensitive pattern through correlated variables after the sensitive column has been deleted.
 
-[Closing paragraph: "This thesis differs from prior work
-in [N] key respects: [1]..., [2]..., and [3]..."]
+\citet{kilbertus2017proxy} separate a protected attribute from its proxies. A proxy is an observable variable tied to the protected attribute that should be kept from driving the decision. Age in a credit table is tied to how long a person has been able to hold a job, build a credit history, and settle a housing arrangement. Employment duration, the length of the credit relationship, credit history, housing type, and the installment burden relative to disposable income are therefore the variables that can carry age information after age itself is removed. When a dataset contains a direct income variable, income belongs on the same list. The classic German credit table has housing and loan duration as explicit fields, and it records the installment rate as a percentage of disposable income rather than income itself \citep{hofmann1994german}. Those fields are the concrete candidates for the proxy analysis in this thesis.
 
+Retraining without age answers the outcome half of the question. If the demographic parity and equal opportunity gaps remain, the model still treats the age groups differently, and some other feature is supplying age-related information. If the gaps fall to a negligible level, age was acting mainly as a direct input. Both outcomes are possible. The literature gives a reason to expect the first outcome whenever the remaining variables differ by age and still predict default \citep{pedreschi2008discrimination, hardt2016equality}.
 
-% ============================================================
-%  SECTION 2.4: [TOPIC D -- neu can, otherwise skip]
-%  -----------------------------------------------------------
-%  Them section neu thesis cua ban co nhieu component khac nhau.
-%  Vi du: Multilinguality, Evaluation Methodology, etc.
-% ============================================================
+SHAP answers the explanation half. After the model is retrained without age, mean absolute SHAP names the remaining features that move the prediction. A feature whose SHAP importance rises, and whose values differ between applicants under 25 and applicants aged 25 and above, is a candidate proxy. The limit of that reading is as important as the reading itself. A SHAP value measures influence on the model output \citep{lundberg2017shap, lundberg2020treeshap}. It does not establish a causal path from age through that feature. Two variables can both be correlated with age, while only one of them is a legitimate description of repayment capacity. \citet{kilbertus2017proxy} state the distinction precisely: an observational attribution cannot replace a causal claim.
 
-% Optional: Add Section 2.4 if needed
+The third research question is therefore answered in two layers. Removing the age column leaves a residual disparity in place whenever credit history, employment length, housing, or an income-related variable still differs by age and still predicts default. SHAP indicates which of those variables the retrained model uses. The indication is a candidate list, supported by the change in the two fairness gaps, and it stops short of a claim that one feature simply stands in for age.
 
+\section{Reweighing, Threshold Adjustment, and the Performance Cost}
+\label{sec:related-mitigation}
 
-% ============================================================
-%  SECTION 2.5: SUMMARY (optional but recommended)
-%  -----------------------------------------------------------
-%  Neu thesis co nhieu section trong Chapter 2,
-%  them mot phan tom tat cuoi chapter la tot.
-%  Neu chi co 2-3 section, co the bo qua.
-%
-%  Noi dung phan Summary:
-%  - Tom tat nhung gi da duoc xay dung truoc day
-%  - Neu ro khoang trong (gap) ma thesis nay dap ung
-%  - Lam cau noi sang Chapter 3
-%
-%  Vi du ket thuc Chapter 2:
-%  "The literature reviewed above reveals that while [Topic A]
-%   has matured significantly, its application to [specific
-%   domain] -- particularly under [constraint] -- remains
-%   underexplored. The work closest to ours is [X], but it
-%   does not address [gap 1] or [gap 2]. The system
-%   described in Chapter 3 is designed to close these gaps."
-% ============================================================
+The fourth research question asks how much one mitigation method reduces the measured disparity, and what that reduction costs in accuracy and ROC-AUC. Mitigation can change the training data, the learning objective, or the decision rule applied to an already trained score \citep{kozodoi2022fairness}. \citet{kozodoi2022fairness} compare these families in a profit-oriented credit setting. In-processing methods often give a favorable balance between profit and fairness, and a moderate reduction in discrimination costs much less than driving a fairness gap all the way to zero. This thesis follows the research questions and studies one pre-processing method, reweighing, or one post-processing method, threshold adjustment. The two methods place the performance cost in different quantities, which is why both are reviewed here.
+
+Reweighing, introduced by \citet{kamiran2012reweighing}, keeps every feature and every label and assigns each training row a weight
+\begin{equation}
+  w(a, y) = \frac{P(A = a)\, P(Y = y)}{P(A = a, Y = y)}.
+  \label{eq:reweighing}
+\end{equation}
+A group-label combination that is scarce relative to independence receives a weight above one. A combination that is overrepresented receives a weight below one. LightGBM accepts these weights at training time. Because the model is trained again, accuracy and ROC-AUC can both change. The effect on fairness is indirect: the learner sees a rebalanced sample, and the new scores may produce smaller demographic parity and equal opportunity gaps at the original threshold.
+
+Threshold adjustment leaves the score in place and changes the cutoff. \citet{hardt2016equality} derive group-specific thresholds that enforce equal opportunity, or the stronger equalized-odds criterion, while staying as close as possible to the original predictor. \citet{corbettdavies2017cost} explain where the accuracy cost comes from. When a score is calibrated within each group and the cost of an error is the same for every person, one shared threshold maximizes accuracy. Moving the groups onto different thresholds, in order to equalize an error rate, increases the number of errors. The same logic applies to an acceptance decision in lending. A related post-processing idea flips only the uncertain cases near the boundary, in the direction that reduces the disparity \citep{kamiran2012reweighing}.
+
+The two methods charge different prices. ROC-AUC summarizes ranking across all thresholds. Choosing a new global threshold, or a separate threshold for each age group, leaves the ROC-AUC of the underlying score unchanged and changes accuracy, the confusion matrix, and both fairness gaps. Reweighing changes the score, so ROC-AUC can rise or fall. A fair report therefore separates accuracy from ROC-AUC, and it states whether the mitigated policy still uses one score or two group-specific thresholds. \citet{kozodoi2022fairness} show that the cost grows as the fairness target becomes stricter. A modest reduction in the gap can be cheap. Closing the gap can be expensive, because the age groups do not share the same default rate.
+
+The fourth research question is answered by reporting the change in the two fairness gaps beside the change in accuracy and ROC-AUC. Either method can shrink a measured age gap. The smaller gap is a change in the chosen metric. Reweighing is priced by the change in accuracy and ROC-AUC after retraining. Threshold adjustment is priced by the change in accuracy at the new operating point, while the ROC-AUC of the score stays as it was. The size of that price on this dataset is a result for the evaluation chapter. A lower fairness gap is a trade-off with a measured cost, rather than a free correction.
+
+\section{What the Literature Answers}
+\label{sec:related-rq}
+
+Table~\ref{tab:rq-literature} collects the four answers. In each row, prior work fixes the definition, the comparison, and the reason a result can come out in more than one way. The numerical result for this LightGBM model remains to be measured, because feature rank, acceptance gaps, proxy strength, and the mitigation cost all depend on the dataset, the split, and the threshold.
+
+\begin{table}[H]
+  \centering
+  \setstretch{1.05}
+  \caption{Answers supported by prior work, and the measurement left to this thesis. \(A = 0\) denotes applicants under 25 and \(A = 1\) denotes applicants aged 25 and above. The favorable decision is acceptance.}
+  \label{tab:rq-literature}
+  \small
+  \begin{tabular}{%
+    >{\raggedright\arraybackslash}p{2.15cm}%
+    >{\raggedright\arraybackslash}p{5.55cm}%
+    >{\raggedright\arraybackslash}p{5.45cm}}
+    \toprule
+    \textbf{Question} & \textbf{What prior work establishes} & \textbf{What this thesis measures} \\
+    \midrule
+    RQ1. Explanation &
+    Mean absolute SHAP ranks influence on the predicted probability. Gain and split importance rank the use of a feature inside the trees. The two views often share their leading features and can differ in order \citep{lundberg2017shap, lundberg2020treeshap, delange2022xai}. &
+    The top feature on this dataset, and the rank agreement between SHAP, gain, and split importance. \\
+    \addlinespace
+    RQ2. Fairness &
+    Demographic parity compares acceptance rates. Equal opportunity compares acceptance rates among applicants who repay. A high ROC-AUC leaves both gaps open, and the two gaps can differ when default rates differ by age \citep{hardt2016equality, kozodoi2022fairness}. &
+    The demographic parity difference and the equal opportunity difference for under 25 versus 25 and above. \\
+    \addlinespace
+    RQ3. Hidden bias &
+    Deleting age leaves a disparity in place when other variables encode age. Housing, credit duration, employment length, and income-related variables are the usual candidates. SHAP names the features the retrained model uses \citep{pedreschi2008discrimination, kilbertus2017proxy}. &
+    The two fairness gaps after age is removed, and the features whose SHAP importance marks them as candidate proxies. \\
+    \addlinespace
+    RQ4. Mitigation &
+    Reweighing retrains the model, so accuracy and ROC-AUC can both change. Group-specific thresholds change accuracy and the fairness gaps, and they leave the score's ROC-AUC unchanged. Stronger fairness targets cost more \citep{kamiran2012reweighing, hardt2016equality, corbettdavies2017cost, kozodoi2022fairness}. &
+    The reduction in each gap under the selected method, and the accompanying change in accuracy and ROC-AUC. \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
 \section{Summary}
+\label{sec:related-summary}
 
-% *** VIET SUMMARY CUA CHAPTER 2 TAI DAY ***
+The work reviewed above already supplies the tools this thesis uses. Ensemble benchmarks show why a boosted tree model is a credible default predictor \citep{lessmann2015benchmark, ke2017lightgbm, delange2022xai}. SHAP and TreeSHAP supply an attribution that can be compared with gain and split importance \citep{lundberg2017shap, lundberg2020treeshap}. Demographic parity and equal opportunity supply two distinct age-group tests, with applicants under 25 as the unprivileged group \citep{hardt2016equality, kamiran2012reweighing, bellamy2019aif360}. The proxy literature explains why deleting age can leave both tests failed \citep{pedreschi2008discrimination, kilbertus2017proxy}. Reweighing and threshold adjustment supply a mitigation step whose cost is visible in accuracy and, for reweighing, in ROC-AUC \citep{kamiran2012reweighing, kozodoi2022fairness}.
 
-[Write 1-2 paragraphs that:
-(1) Briefly synthesize what the reviewed literature has
-    established.
-(2) Clearly state the gap(s) that your thesis fills.
-(3) Bridge to Chapter 3 with one sentence.]
-
+These pieces are usually studied separately. A credit paper may explain a LightGBM model with SHAP and stop before age-group fairness. A fairness paper may report demographic parity and equal opportunity and stop before asking which features SHAP identifies as stand-ins for age. A mitigation paper may report a profit cost and stop before separating the effect on accuracy from the effect on ROC-AUC. This thesis joins the four questions on one LightGBM model: the comparison of SHAP with built-in importance, the two age gaps, the effect of removing age, and the performance cost of one mitigation method. Chapter~\ref{chap:methodology} specifies the data, the age coding, the metrics, and the mitigation procedure that produce those measurements.

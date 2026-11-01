@@ -1,327 +1,86 @@
-% ============================================================
-%  CHAPTER 1: INTRODUCTION
-% ============================================================
-
 \chapter{Introduction}
 \label{chap:introduction}
 
-Credit-default prediction is an important decision-support task in lending because the consequences of an incorrect decision affect both financial institutions and borrowers. A model that fails to identify a likely default may expose a lender to avoidable losses, while a model that incorrectly rejects a reliable borrower may restrict access to credit. For this reason, predictive performance is necessary, but it is not sufficient for evaluating a credit-risk model. A useful model must also provide information that supports review, accountability, and the detection of unequal treatment.
+Credit-default prediction is an important decision-support task because an
+incorrect decision can expose a lender to loss or restrict a reliable
+borrower's access to credit. Ensemble models can learn non-linear relationships
+in borrower data, but their decisions are harder to inspect than those of a
+simple scorecard. A high aggregate score also does not show whether applicants
+from different age groups receive comparable treatment.
 
-This chapter introduces the motivation, problem statement, research questions, objectives, contributions, and scope of this thesis. The work investigates credit-default prediction with ensemble machine learning models while considering two related requirements: predictions should be explainable, and their behavior should be examined for fairness across age groups.
+This thesis studies prediction, explanation, and fairness as connected
+properties of one credit-risk model. It uses LightGBM, SHAP explanations,
+age-group fairness metrics, an age-blind model, and reweighing. The study also
+audits data preparation because a preprocessing decision can create or hide a
+fairness disparity before a model is trained.
 
 \section{Motivation}
 
-Credit-risk assessment has traditionally relied on structured borrower information and statistical analysis to estimate the likelihood of default. Machine learning models can identify complex relationships among financial and demographic variables, making them attractive for this task. Ensemble models are particularly useful because they combine the predictive strength of multiple decision trees or learners and can represent non-linear interactions that simpler models may miss.
-
-However, stronger predictive capacity often makes a model more difficult to inspect. A lender, auditor, or affected borrower may need to understand why an application was assigned a high or low default risk. A single accuracy value does not explain which variables influenced a prediction, whether the model relies on reasonable patterns, or whether the same evidence is treated consistently across groups. This creates a practical gap between a model that produces predictions and a model whose predictions can be responsibly evaluated.
-
-Fairness is a second concern. A model can achieve good overall performance while producing different error rates or positive prediction rates for different demographic groups. In credit assessment, such disparities are especially important because they may affect access to financial services. Excluding a sensitive attribute such as age from the input features does not necessarily eliminate age-related bias. Other variables may contain information correlated with age and therefore act as proxies. Fairness analysis must consequently examine model outcomes and influential features rather than assuming that removing one column solves the problem.
-
-Explainability methods can help reveal how a model reaches its decisions. In particular, SHapley Additive exPlanations (SHAP) can be used to examine the contribution of individual features to model outputs at both the global and local levels. Comparing SHAP explanations with the model's built-in feature importance can provide a more complete view of model behavior. The comparison may show which variables are consistently influential, which variables have context-dependent effects, and which variables deserve further investigation as possible proxies.
-
-These considerations motivate an integrated analysis of prediction, explainability, and fairness. This thesis therefore studies an ensemble-based credit-default prediction model, analyzes its feature influence using model-based importance and SHAP, evaluates fairness across defined age groups, and examines whether a mitigation approach can reduce measured disparities without causing an unacceptable loss of predictive performance. The goal is not to claim that a statistical fairness measure proves the absence of discrimination, but to provide evidence that makes model behavior more transparent and easier to assess.
+Credit-risk models must identify likely defaults while supporting review and
+accountability. SHAP can show which features influence a prediction, but an
+explanation does not automatically establish that the model treats groups
+fairly. Conversely, an aggregate accuracy or ROC-AUC does not reveal group
+differences. Removing age from the input also does not guarantee fairness when
+credit history, employment, housing, or income carry age information.
 
 \section{Problem Statement}
-\label{sec:problem-statement}
 
-The central problem addressed by this thesis is how to evaluate a credit-default prediction model beyond overall predictive performance. An ensemble model may identify useful patterns in borrower data, but its decisions can be difficult to interpret and may differ in their effects across demographic groups. In addition, the relationship between explainability and fairness is not automatic: an explanation can identify influential variables, but further analysis is required to determine whether those variables contribute to unequal outcomes.
+The problem addressed by this thesis is how to evaluate a credit-default model
+beyond overall predictive performance. The study asks which features drive
+the model, whether approvals differ between age groups, whether disparity
+remains after age removal, and what performance cost is associated with
+reweighing.
 
 \section{Research Questions}
 \label{sec:research-questions}
 
-The investigation is guided by the following research questions:
-
 \begin{enumerate}
-      \item Which features most influence the ensemble credit-default prediction model, and how do SHAP explanations compare with the model's built-in feature importance?
-      \item Does the model perform fairly across the defined age groups when evaluated using demographic parity and equal opportunity?
-      \item Does age-related disparity remain when the age feature is removed, and which other features may act as proxies for age?
-      \item Can a selected mitigation approach, such as reweighing or threshold adjustment, reduce the measured disparity, and what trade-off does it introduce in predictive performance?
+  \item Which features most influence the LightGBM model, and how do SHAP
+  explanations compare with built-in gain and split importance?
+  \item Does the model treat applicants under 25 and applicants aged 25 and
+  above fairly under demographic parity and equal opportunity?
+  \item Does age-related disparity remain after removing age, and which
+  remaining features may act as age proxies?
+  \item How much does reweighing reduce measured disparity, and what does it
+  cost in accuracy and ROC-AUC?
 \end{enumerate}
-
-The exact age-group definition, evaluation protocol, and metric calculations are specified in Chapter~\ref{chap:methodology}. The questions are intentionally empirical: each one is addressed through measurements on the selected dataset rather than through an assumption that a particular model or feature is inherently fair or unfair.
 
 \section{Objectives}
-\label{sec:objectives}
-
-The specific objectives of this thesis are:
 
 \begin{enumerate}
-      \item Develop an ensemble machine learning model for credit-default prediction using the selected borrower dataset.
-      \item Evaluate the model's predictive behavior and explain its decisions using built-in feature importance and SHAP-based global and local analyses.
-      \item Measure fairness across the defined age groups using demographic parity and equal opportunity alongside standard predictive-performance metrics.
-      \item Analyze whether removing age from the feature set eliminates age-related disparities and identify influential variables that may function as age proxies.
-      \item Evaluate a selected fairness-mitigation approach and quantify its effect on both group fairness and predictive performance.
+  \item Develop and evaluate a LightGBM credit-default classifier on cleaned
+  borrower data.
+  \item Compare gain, split, and mean absolute SHAP importance.
+  \item Measure demographic parity and equal opportunity with uncertainty
+  intervals.
+  \item Retrain without age and audit residual age information and candidate
+  proxy features.
+  \item Evaluate reweighing through both fairness changes and predictive-cost
+  measurements.
 \end{enumerate}
-
-These objectives are revisited in Chapter~\ref{chap:results} and Chapter~\ref{chap:conclusion}. The evaluation is considered complete only when the model's predictive results, explanations, group-level behavior, and mitigation trade-offs are reported together.
 
 \section{Contributions}
-\label{sec:contributions}
 
-This thesis makes the following expected contributions:
+The thesis contributes an integrated evaluation of predictive performance,
+explainability, and age-group fairness. It documents a preparation audit that
+found duplicate rows, age-selective outlier deletion, and engineered features
+that recovered age exactly. It also defines a reproducible comparison between
+an age-inclusive model, an age-blind model, and their reweighed variants.
 
-\begin{itemize}
-      \item An integrated evaluation of credit-default prediction that considers predictive performance, explainability, and fairness rather than treating them as independent concerns.
-      \item A comparison between ensemble-model feature importance and SHAP explanations to identify influential features and clarify how their effects vary across predictions.
-      \item An empirical analysis of age-group fairness, including the extent to which disparities remain after the direct age feature is excluded.
-      \item An evaluation of the fairness-performance trade-off produced by a selected mitigation approach.
-\end{itemize}
+\section{Scope and Limitations}
 
-The contributions are empirical and dataset-specific. They are intended to support more transparent model evaluation, not to establish a universal fairness guarantee for all credit-scoring systems.
-
-\section{Scope}
-\label{sec:scope}
-
-This work focuses on offline credit-default prediction using structured borrower data and an ensemble machine learning model. The scope includes model training and evaluation, standard predictive-performance measurements, global and local explainability analysis with SHAP, and group fairness analysis for the defined age categories. The study also includes a comparison involving the age feature and an evaluation of one selected mitigation approach, such as reweighing or threshold adjustment.
-
-The analysis is limited to the selected dataset, target definition, feature representation, age-group boundaries, and experimental protocol. It does not claim that the dataset represents every lending population or that the measured results establish causal discrimination. The thesis also does not cover deployment in a production lending system, live decision-making, legal compliance certification, continuous monitoring, or the design of a complete loan-approval workflow. These limitations are necessary to keep the investigation focused on the relationship between predictive performance, explanations, and measured group disparities.
+The study concerns offline prediction on the public Credit Risk Dataset. It
+uses 11 recorded predictors, a binary default label, LightGBM, SHAP, the
+under-25 versus 25-and-above grouping, and reweighing. The dataset is
+simulated, its age distribution is narrow, and outcomes are available only for
+granted loans. Therefore, the findings are specific to this dataset and
+protocol and do not establish a general legal or fairness guarantee.
 
 \section{Thesis Organization}
 
-The remainder of this thesis is organized as follows. Chapter~\ref{chap:related} reviews related work on credit-default prediction, ensemble machine learning, explainable artificial intelligence, and algorithmic fairness. Chapter~\ref{chap:methodology} presents the methodology, including the model design, explainability techniques, fairness definitions, evaluation metrics, and mitigation strategy. Chapter~\ref{chap:implementation} describes the implementation and experimental setup, including data preparation, model configuration, and evaluation procedures. Chapter~\ref{chap:results} reports the predictive, explainability, and fairness results and discusses their implications for the research questions. Finally, Chapter~\ref{chap:conclusion} summarizes the findings, relates them to the objectives, discusses limitations, and presents directions for future work.
-\endinput
-%
-%  VAI TRO CUA CHAPTER 1:
-%  Chapter 1 la "ban do" cua toan bo luan van. Sau khi doc
-%  xong chapter nay, nguoi doc phai biet:
-%    (1) Van de ban giai quyet la gi?
-%    (2) Tai sao van de do quan trong?
-%    (3) Tai sao cac giai phap hien tai chua du?
-%    (4) Ban da lam gi cu the?
-%    (5) Luan van duoc to chuc nhu the nao?
-%
-%  TU DUY VIET CHAPTER 1:
-%  Hay tuong tuong ban dang ke chuyen cho mot sinh vien
-%  ky su nam 3. Ho hieu ky thuat co ban nhung chua biet gi
-%  ve de tai cua ban. Mo rong dan tu van de thuc te -> gap
-%  ky thuat -> giai phap -> dong gop cua ban.
-%
-%  *** TRANH LOI SAI PHO BIEN NHAT ***:
-%  -> Bat dau bang dinh nghia ky thuat nhu tu dien:
-%     "Machine learning is a branch of artificial intelligence
-%     that enables computers to learn from data..."
-%     LOI NAY RAT PHO BIEN. Thay bang bat dau tu van de thuc te.
-%
-%  -> Viet Motivation va Objectives qua chung chung:
-%     "The objective is to build a system to improve the user
-%     experience." -- Qua mo. Phai cu the.
-% ============================================================
-
-\chapter{Introduction}
-\label{chap:introduction}
-
-% ============================================================
-%  SECTION 1.1: MOTIVATION
-%  -----------------------------------------------------------
-%  Muc tieu: Thuyet phuc nguoi doc rang van de nay QUAN TRONG
-%  va DANG GIAI QUYET.
-%
-%  CAU TRUC GOI Y (4-6 doan):
-%
-%  Doan 1 -- Boi canh rong (big picture):
-%    Mo dau bang mot thuc te co the quan sat, khong phai
-%    bang dinh nghia. Dat nguoi doc vao hoan canh.
-%    Vi du hay:
-%    "Students enrolled in [X program] at [university] face a
-%     recurring challenge during registration: they must
-%     consult multiple separate documents to answer questions
-%     that seem simple on the surface."
-%    "Every year, [N] students must [action], yet the tools
-%     available for [task] remain limited to [old solution]."
-%
-%  Doan 2 -- Van de cu the (narrow down):
-%    Neu ro dieu gi dang gay kho khan, mat thoi gian, hay
-%    dan den sai so. Dung du lieu hoac quan sat cu the.
-%    Vi du:
-%    "This information is distributed across [X] separate
-%     documents that are not cross-referenced. As a result,
-%     answering a single question may require consulting
-%     [N] sources, and contradictions between documents
-%     are not uncommon."
-%
-%  Doan 3 -- Hau qua / impact:
-%    Van de nay anh huong the nao den nguoi dung cuoi cung?
-%    Vi du:
-%    "Advisors spend a disproportionate share of their time
-%     answering factual questions that have a single correct
-%     answer. This reduces the time available for the deeper,
-%     interpretive guidance that requires human judgment."
-%
-%  Doan 4 -- Tai sao cac giai phap hien tai chua du:
-%    Neu 1-2 huong tiep can hien tai va diem yeu cua chung.
-%    Vi du:
-%    "Existing solutions such as [X] address part of this
-%     problem but do not handle [Y]. General-purpose chatbots
-%     are prone to [hallucination / language mismatch / lack
-%     of domain specificity]."
-%
-%  Doan 5 -- Giai phap cua ban (brief preview):
-%    Gioi thieu ngan gon ve dieu ban xay dung.
-%    Chua di vao ky thuat, chi neu big picture.
-%    Vi du:
-%    "This thesis addresses these limitations by designing
-%     a [system type] that [key capability 1] and
-%     [key capability 2], operating under [key constraint
-%     such as resource limit / language requirement]."
-%
-%  CAC CUM TU HAY DUNG DE MO DAU MOTIVATION:
-%    "X is a well-established challenge in Y."
-%    "Despite advances in X, the problem of Y remains
-%     largely unsolved in the context of Z."
-%    "As X grows, so does the need for Y."
-%    "A recurring pain point in [domain] is..."
-%    "The gap between [what exists] and [what is needed]
-%     motivates the present work."
-% ============================================================
-
-\section{Motivation}
-
-% *** VIET NOI DUNG MOTIVATION CUA BAN TAI DAY ***
-% Goi y: 4-6 doan, tong khoang 400-600 tu.
-% Bat dau tu van de thuc te, thu hep dan ve ky thuat.
-
-[Write your motivation here. Describe the real-world setting
-first, then narrow down to the specific technical gap your
-thesis addresses.]
-
-[Paragraph 1: Describe the broader context and observable
-problem. Avoid starting with a dictionary definition.]
-
-[Paragraph 2: Narrow the problem. Give concrete details about
-what is missing, broken, or inefficient.]
-
-[Paragraph 3: Explain the consequences of the problem. Who
-is affected and how?]
-
-[Paragraph 4: Briefly explain why existing solutions are not
-sufficient. Name 1-2 existing approaches and their limits.]
-
-[Paragraph 5: Introduce your proposed solution in one
-paragraph -- high level only, no technical details yet.]
-
-
-% ============================================================
-%  SECTION 1.2: OBJECTIVES
-%  -----------------------------------------------------------
-%  Muc tieu: Neu CHINH XAC ban se lam gi.
-%
-%  NGUYEN TAC VIET OBJECTIVES TOT:
-%  - Moi objective phai la mot dong tu hanh dong cu the:
-%    Develop, Design, Implement, Evaluate, Compare, Analyze
-%  - Khong dung dong tu mo ho: Improve, Explore, Study
-%  - Moi objective phai co the kiem tra duoc (testable):
-%    Nguoi doc phai co the nhan ra khi nao ban "dat" objective
-%  - 3-5 objectives la phu hop cho undergrad thesis
-%  - Objectives phai lien ket truc tiep voi ket qua o Chapter 5
-%    (Sau nay ban se nhin lai va noi: "Objective 1 duoc giai
-%     quyet bang ket qua o Section 5.X.")
-%
-%  FORMAT: Dung itemize hoac enumerate.
-%  Vi du objectives tot:
-%    "Develop a [system] that performs [task] supporting both
-%     [language A] and [language B] without translation."
-%    "Evaluate the accuracy of the system against a benchmark
-%     of [N] manually verified question-answer pairs."
-%    "Compare the performance of [model A] and [model B] under
-%     identical retrieval conditions."
-%    "Identify which pipeline design choices produce the
-%     largest impact on end-to-end accuracy."
-% ============================================================
-
-\section{Objectives}
-
-% *** VIET OBJECTIVES CUA BAN TAI DAY ***
-% Goi y: 3-5 objectives, dung enumerate.
-
-The specific objectives of this thesis are:
-
-\begin{enumerate}
-  \item [Objective 1: Write one clear, action-verb objective.
-        Example: "Develop a [system] that [specific capability]
-        under [specific constraint]."]
-
-  \item [Objective 2: An evaluation objective. Example:
-        "Evaluate the [system] on [N] test cases using
-        [metric] to measure [property]."]
-
-  \item [Objective 3: A comparison or analysis objective.
-        Example: "Compare [approach A] against [approach B]
-        under [condition] to determine [what]."]
-
-  \item [Optional Objective 4: A more specific technical
-        objective if needed.]
-\end{enumerate}
-
-
-% ============================================================
-%  SECTION 1.3: SCOPE
-%  -----------------------------------------------------------
-%  Muc tieu: Xac dinh RO RANG he thong cua ban lam gi va
-%  khong lam gi. Day la phan rat quan trong vi:
-%  - Bao ve ban khoi bi hoi "tai sao ban khong lam X?"
-%  - Giup nguoi doc danh gia ket qua mot cach cong bang
-%  - The hien tu duy phan tich cua ban
-%
-%  Nen bao gom:
-%  - Pham vi du lieu (du lieu nao, bao nhieu, tu nguon nao)
-%  - Pham vi chuc nang (he thong ho tro nhung loai query nao)
-%  - Pham vi danh gia (danh gia tren gi, o dieu kien nao)
-%  - Nhung gi KHONG nam trong scope (va ly do)
-%
-%  Mau cau hay dung:
-%    "This work focuses on X and does not address Y."
-%    "The evaluation covers [N] cases drawn from [source];
-%     live production data and multi-turn interactions are
-%     outside the scope of this thesis."
-%    "The system is designed for [specific domain/user group]
-%     and is not intended for [other use case]."
-%    "Multi-user deployment, authentication, and admin tools
-%     are deferred to future work (Section~\ref{sec:future})."
-% ============================================================
-
-\section{Scope}
-\label{sec:scope}
-
-% *** VIET SCOPE CUA BAN TAI DAY ***
-% Goi y: 2-4 doan, mo ta ca "in scope" va "out of scope".
-
-[Describe what your system/method covers. Be specific about
-the data, tasks, and evaluation conditions.]
-
-[Also state what is explicitly out of scope and why. This
-protects you from reviewers asking "why didn't you do X?"
-Reference Section~\ref{sec:future} for items left to future
-work.]
-
-
-% ============================================================
-%  SECTION 1.4: THESIS ORGANIZATION
-%  -----------------------------------------------------------
-%  Muc tieu: Noi cho nguoi doc biet cau truc luan van.
-%  Day la phan ngan, co dinh. Viet khoang 1 doan.
-%
-%  Format chuan:
-%  "The remainder of this thesis is organized as follows.
-%   Chapter 2 reviews... Chapter 3 presents...
-%   Chapter 4 describes... Chapter 5 reports...
-%   Chapter 6 concludes..."
-%
-%  Moi chapter can 1 cau mo ta. Khong can chi tiet.
-% ============================================================
-
-\section{Thesis Organization}
-
-The remainder of this thesis is organized as follows.
-Chapter~\ref{chap:related} reviews related work on [topic 1],
-[topic 2], and [topic 3].
-Chapter~\ref{chap:methodology} presents the design of the
-proposed [system/method], covering [key component 1] and
-[key component 2].
-Chapter~\ref{chap:implementation} describes the implementation
-details, evaluation benchmark, and experimental setup.
-Chapter~\ref{chap:results} reports the evaluation results and
-discusses their implications with respect to the research
-objectives.
-Chapter~\ref{chap:conclusion} concludes the thesis and outlines
-directions for future work.
-
+Chapter 2 reviews ensemble credit models, SHAP, group fairness, proxy
+features, and mitigation. Chapter 3 presents the methodology and experimental
+design. Chapter 4 describes the implementation and evaluation setup. Chapter
+5 reports the available baseline and audit findings and defines the required
+final result tables. Chapter 6 summarizes the contributions, objective status,
+and future work.

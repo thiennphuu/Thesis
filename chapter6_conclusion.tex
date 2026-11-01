@@ -1,202 +1,62 @@
-% ============================================================
-%  CHAPTER 6: CONCLUSION
-% ============================================================
-%
-%  VAI TRO CUA CHAPTER 6:
-%  Chapter 6 la bang ket cua toan bo cong trinh.
-%  Nguoi doc -- dac biet la examiner / reviewer -- thuong doc
-%  chapter nay NGAY SAU KHI DOC ABSTRACT.
-%
-%  Chapter 6 KHONG phai la noi:
-%  - Viet lai toan bo thesis (do la phan tom tat)
-%  - Them noi dung ky thuat moi
-%  - Dua ra phan tich moi chua co o Chapter 5
-%
-%  Chapter 6 LA noi:
-%  (1) Tom tat dong gop chinh (contributions)
-%  (2) Lien ket ket qua voi objectives (da dat chua?)
-%  (3) Neu huong phat trien trong tuong lai
-%
-%  LOI SAI PHO BIEN:
-%  1. Viet conclusion qua ngan (1 trang) hoac qua dai
-%     (lap lai toan bo Chapter 5).
-%  2. Neu "future work" qua chung chung:
-%     "Future work could improve the system further."
-%     -> Phai cu the: cai gi, bang cach nao, tai sao.
-%  3. Khong noi lai objectives tu Chapter 1.
-%     Exam / reviewer se so sanh Chapter 1 voi Chapter 6.
-% ============================================================
-
 \chapter{Conclusion}
 \label{chap:conclusion}
 
-% ============================================================
-%  SECTION 6.1: SUMMARY OF CONTRIBUTIONS
-%  -----------------------------------------------------------
-%  Tom tat nhung gi ban da lam va nhung gi ban da hoc duoc.
-%
-%  CAU TRUC GOI Y (3-4 doan):
-%
-%  Doan 1: Nhac lai van de va khoang trong ban giai quyet.
-%    Vi du:
-%    "This thesis addressed the challenge of [problem]
-%     in [domain]. Existing systems [limitation]. The
-%     present work set out to address this by [approach]."
-%
-%  Doan 2: Tom tat he thong / phuong phap chinh.
-%    (1-2 cau cho moi component chinh. Khong lap lai Chapter 3.)
-%    Vi du:
-%    "The system was built around [core idea]. [Component A]
-%     handled [task]; [Component B] enabled [capability];
-%     [Component C] ensured [property]."
-%
-%  Doan 3: Tom tat ket qua chinh.
-%    Neu con so quan trong nhat tu Chapter 5.
-%    Vi du:
-%    "Evaluation on [N] test cases showed that [key result].
-%     The system outperformed [baseline] by [X pp] overall,
-%     with the greatest gains on [category]. The comparison
-%     of model sizes showed [finding], suggesting [implication]."
-%
-%  Doan 4: Ket luan lon (big takeaway).
-%    1 cau mo ta dong gop quan trong nhat cua luan van.
-%    Vi du:
-%    "The primary finding is that [finding], which implies
-%     [implication for field / practitioners]."
-%
-%  GHI CHU: Dung thi hien tai hoan thanh (present perfect) cho
-%  nhung gi ban da lam:
-%    "This thesis has shown / demonstrated / developed..."
-%    "The system was built / evaluated / compared..."
-% ============================================================
-
 \section{Summary of Contributions}
-\label{sec:contributions}
 
-% *** VIET SUMMARY OF CONTRIBUTIONS TAI DAY ***
-[Write 3-4 paragraphs summarizing:
-(1) The problem and gap you addressed
-(2) The system/method you built (high level)
-(3) The key results with numbers
-(4) The main takeaway / broader implication]
+This thesis addressed the problem of evaluating credit-default prediction
+beyond a single aggregate performance metric. It combined explainability,
+age-group fairness, proxy auditing, and mitigation in one experimental design
+so that each analysis could be interpreted against the same data split and
+decision threshold.
 
+The main methodological contribution is the fairness-oriented audit of data
+preparation. The earlier pipeline retained duplicates, removed older
+applicants through distributional outlier filtering, and added ratio features
+that recovered age exactly. The revised pipeline removes only logically
+invalid records, keeps missingness, avoids age-derived features, and stratifies
+on age group and outcome.
 
-% ============================================================
-%  SECTION 6.2: REVISITING THE RESEARCH OBJECTIVES
-%  -----------------------------------------------------------
-%  Quan trong: doi chieu tung objective o Chapter 1 voi
-%  ket qua o Chapter 5.
-%
-%  Nguoi reviewer se lam chinh xac viec nay khi cham luan van.
-%  Neu ban lam no truoc, ban the hien su cam ket voi cac
-%  muc tieu ban da dat ra.
-%
-%  Format goi y: dung enumerate, lap lai tung objective va
-%  neu ket qua tuong ung (1-2 cau moi objective).
-%
-%  Vi du:
-%  "Objective 1: Develop a bilingual QA system for curriculum
-%   queries. --> The system supports both English and
-%   Vietnamese input, processing 120 test queries across
-%   both languages without translation."
-%
-%  LUU Y: Neu bat ky objective nao CHUA HOAN TOAN DAT DUOC,
-%  hay noi thang thut. Day la trung thuc va se duoc danh gia
-%  cao hon so voi viec che giau.
-% ============================================================
+The preliminary baseline comparison selected LightGBM, which achieved ROC-AUC
+0.9431 under the earlier protocol. The final claims about SHAP agreement,
+fairness gaps, residual proxy information, and reweighing cost must be based
+on the final experiment outputs. This distinction is important: a model can
+rank risk well while still producing unequal approval behavior.
 
 \section{Revisiting the Research Objectives}
 
-% *** LIEN KET TUNG OBJECTIVE VUI KET QUA TAI DAY ***
 \begin{enumerate}
-  \item \textbf{Objective 1:} [Restate the objective from
-    Chapter 1.]\\
-    \textit{Outcome:} [State whether and how this objective
-    was achieved. Reference a specific result.]
-
-  \item \textbf{Objective 2:} [Restate objective 2.]\\
-    \textit{Outcome:} [Achievement and evidence.]
-
-  \item \textbf{Objective 3:} [Restate objective 3.]\\
-    \textit{Outcome:} [Achievement and evidence.]
-
-  \item \textbf{Objective 4 (if applicable):}
-    [Restate objective 4.]\\
-    \textit{Outcome:} [Achievement and evidence.]
+  \item \textbf{Develop a credit-default classifier.} Achieved at the
+  methodological level with LightGBM and a fixed, reproducible configuration.
+  The preliminary baseline achieved ROC-AUC 0.9431.
+  \item \textbf{Explain model decisions.} The evaluation protocol defines
+  gain, split, and TreeSHAP importance and their rank-agreement measures.
+  Final ranking values must be inserted after the experiment is run.
+  \item \textbf{Measure age-group fairness.} The study defines DPD, EOD,
+  false-positive-rate differences, group-wise ROC-AUC, and bootstrap intervals.
+  The final gap estimates are not present in the supplied information.
+  \item \textbf{Audit age removal and mitigation.} M1, M0-RW, and M1-RW are
+  specified, including proxy ablation and performance-cost measurements.
+  Their numerical outcomes require the final experiment output.
 \end{enumerate}
-
-
-% ============================================================
-%  SECTION 6.3: FUTURE WORK
-%  -----------------------------------------------------------
-%  Huong phat trien trong tuong lai.
-%
-%  MOI HUONG FUTURE WORK PHAI BAO GOM:
-%  (1) Ten huong / component muon phat trien
-%  (2) Ly do tai sao dieu nay co the cai thien ket qua
-%  (3) Cach thuc hien cu the (du bac nhat)
-%
-%  Vi du TOT:
-%  "The intent classifier currently uses a zero-shot LLM
-%   prompt. A supervised classifier trained on labeled
-%   examples from this domain would likely reduce
-%   misclassification on ambiguous queries, which accounted
-%   for [X%] of errors in the analysis (Section 5.3).
-%   A dataset of 200-300 labeled examples would suffice
-%   to fine-tune a lightweight model."
-%
-%  Vi du KIEM (tranh):
-%  "Future work could improve the system to handle more
-%   types of queries." (Qua chung, vo nghia)
-%
-%  3-5 huong future work la phu hop cho undergrad thesis.
-%  Uu tien nhung dieu:
-%  - Truc tiep giai quyet han che da neu o Section 5.5
-%  - Co the thuc hien duoc trong 1-2 semester
-%  - Co gia tri thuc te ro rang
-% ============================================================
 
 \section{Future Work}
-\label{sec:future}
-
-% *** NEU HUONG FUTURE WORK TAI DAY ***
-[Describe 3-5 directions for future work.
-For each: name the improvement, explain why it would help,
-and suggest how it could be done concretely.
-Each item should be 2-4 sentences.]
 
 \begin{enumerate}
-  \item \textbf{[Future direction 1]:} [Describe the
-    improvement, why it matters, and how it could be done.
-    Reference the limitation it addresses from Section
-    ~\ref{sec:limitations}.]
-
-  \item \textbf{[Future direction 2]:} [Same structure.]
-
-  \item \textbf{[Future direction 3]:} [Same structure.]
-
-  \item \textbf{[Optional future direction 4]:}
-    [Same structure.]
+  \item \textbf{Complete repeated evaluation:} run the four model conditions
+  on the primary and ten additional splits and populate the result tables with
+  paired bootstrap intervals.
+  \item \textbf{Use broader fairness criteria:} add equalized odds,
+  calibration, and subgroup analyses for narrower age bands, while reporting
+  the trade-offs caused by incompatible criteria.
+  \item \textbf{Validate on real lending data:} evaluate on a dataset with
+  documented collection procedures and reject-inference treatment, subject to
+  privacy and governance requirements.
+  \item \textbf{Study causal proxy mechanisms:} combine observational SHAP
+  evidence with domain review and causal analysis before removing a feature
+  that may also measure legitimate repayment capacity.
 \end{enumerate}
 
-
-% ============================================================
-%  FINAL PARAGRAPH (optional but strongly recommended)
-%  -----------------------------------------------------------
-%  Ket thuc bang mot cau hoac doan ngon the hien cam nghi
-%  chung ve y nghia cua cong trinh.
-%
-%  Vi du:
-%  "The work reported here is a step toward [broader goal].
-%   Whether [small system] can scale to [larger context]
-%   remains to be seen, but the evidence from this thesis
-%   suggests that [main finding] is a viable foundation
-%   on which to build."
-%
-%  TRANH: Viet loi cam on o day (da co o Acknowledgments).
-%  TRANH: Viet cau qua lon lao: "This thesis will
-%  revolutionize..." (Khong phu hop voi van phong khoa hoc)
-% ============================================================
-
-% *** VIET CLOSING PARAGRAPH (tuy chon) TAI DAY ***
-
+The central lesson is that explainability and fairness should be evaluated
+together with data quality. Removing a sensitive column is not sufficient when
+other variables encode related information, and a high predictive score does
+not by itself establish equitable treatment.
